@@ -11,13 +11,16 @@ static DistanceRow DISTANCES[] =
     { L"Москва", L"Воронеж", 515 },
     { L"Москва", L"Ростов-на-Дону", 1080 }
 };
+
 static const int DIST_COUNT = sizeof(DISTANCES) / sizeof(DistanceRow);
+
 static std::wstring Normalize(const std::wstring& s)
 {
     std::wstring r = s;
     std::transform(r.begin(), r.end(), r.begin(), towlower);
     return r;
 }
+
 int GetDistanceKm(const std::wstring& from, const std::wstring& to)
 {
     std::wstring f = Normalize(from);

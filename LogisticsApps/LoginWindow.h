@@ -1,4 +1,6 @@
-#pragma once
+п»ї#pragma once
+
+#include "UITheme.h"
 
 namespace LogisticsApp {
 
@@ -9,24 +11,16 @@ namespace LogisticsApp {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
-	/// <summary>
-	/// Сводка для LoginWindow
-	/// </summary>
 	public ref class LoginWindow : public System::Windows::Forms::Form
 	{
 	public:
 		LoginWindow(void)
 		{
 			InitializeComponent();
-			//
-			//TODO: добавьте код конструктора
-			//
+
 		}
 
 	protected:
-		/// <summary>
-		/// Освободить все используемые ресурсы.
-		/// </summary>
 		~LoginWindow()
 		{
 			if (components)
@@ -37,11 +31,8 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Panel^ panel1;
 	private: System::Windows::Forms::Label^ label1;
 	private: System::Windows::Forms::Panel^ pnSenderTabs;
-
 	private: System::Windows::Forms::RadioButton^ btnSenderPerson;
 	private: System::Windows::Forms::RadioButton^ btnSenderLegal;
-
-
 	private: System::Windows::Forms::RadioButton^ btnSenderIP;
 	private: System::Windows::Forms::Panel^ pnSenderPerson;
 	private: System::Windows::Forms::Label^ label6;
@@ -60,7 +51,6 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label7;
 	private: System::Windows::Forms::TextBox^ textBox6;
 	private: System::Windows::Forms::Panel^ pnSenderIP;
-
 	private: System::Windows::Forms::Label^ label10;
 	private: System::Windows::Forms::DateTimePicker^ dateTimePicker2;
 	private: System::Windows::Forms::Label^ label11;
@@ -79,7 +69,6 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label18;
 	private: System::Windows::Forms::TextBox^ textBox13;
 	private: System::Windows::Forms::Panel^ pnSenderLegal;
-
 	private: System::Windows::Forms::Label^ label31;
 	private: System::Windows::Forms::TextBox^ textBox24;
 	private: System::Windows::Forms::Label^ label30;
@@ -106,9 +95,6 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label19;
 	private: System::Windows::Forms::TextBox^ textBox14;
 	private: System::Windows::Forms::Panel^ pnRecipientLegal;
-
-
-
 	private: System::Windows::Forms::Label^ label32;
 	private: System::Windows::Forms::TextBox^ textBox25;
 	private: System::Windows::Forms::Label^ label33;
@@ -133,8 +119,6 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label43;
 	private: System::Windows::Forms::TextBox^ textBox34;
 	private: System::Windows::Forms::Panel^ pnRecipientIP;
-
-
 	private: System::Windows::Forms::Label^ label44;
 	private: System::Windows::Forms::TextBox^ textBox35;
 	private: System::Windows::Forms::Label^ label45;
@@ -155,8 +139,6 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label53;
 	private: System::Windows::Forms::TextBox^ textBox42;
 	private: System::Windows::Forms::Panel^ pnRecipientPerson;
-
-
 	private: System::Windows::Forms::Label^ label54;
 	private: System::Windows::Forms::DateTimePicker^ dateTimePicker6;
 	private: System::Windows::Forms::Label^ label55;
@@ -174,31 +156,15 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::TextBox^ textBox48;
 	private: System::Windows::Forms::Panel^ panel5;
 	private: System::Windows::Forms::RadioButton^ btnRecipientLegacy;
-
 	private: System::Windows::Forms::RadioButton^ btnRecipientIP;
-
-
-
 	private: System::Windows::Forms::RadioButton^ btnRecipientPerson;
-
-
 	private: System::Windows::Forms::Label^ label62;
 	private: System::Windows::Forms::Button^ btnApproveForms;
-
-
 	protected:
-
 	private:
-		/// <summary>
-		/// Обязательная переменная конструктора.
-		/// </summary>
 		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
-		/// <summary>
-		/// Требуемый метод для поддержки конструктора — не изменяйте 
-		/// содержимое этого метода с помощью редактора кода.
-		/// </summary>
 		void InitializeComponent(void)
 		{
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
@@ -399,7 +365,7 @@ namespace LogisticsApp {
 			this->label44->Name = L"label44";
 			this->label44->Size = System::Drawing::Size(134, 20);
 			this->label44->TabIndex = 1000;
-			this->label44->Text = L"Наименование";
+			this->label44->Text = L"РќР°РёРјРµРЅРѕРІР°РЅРёРµ";
 			// 
 			// textBox35
 			// 
@@ -419,7 +385,7 @@ namespace LogisticsApp {
 			this->label45->Name = L"label45";
 			this->label45->Size = System::Drawing::Size(75, 20);
 			this->label45->TabIndex = 18;
-			this->label45->Text = L"ИНН ИП";
+			this->label45->Text = L"РРќРќ РРџ";
 			// 
 			// textBox36
 			// 
@@ -438,7 +404,7 @@ namespace LogisticsApp {
 			this->label46->Name = L"label46";
 			this->label46->Size = System::Drawing::Size(121, 20);
 			this->label46->TabIndex = 16;
-			this->label46->Text = L"Дата выдачи";
+			this->label46->Text = L"Р”Р°С‚Р° РІС‹РґР°С‡Рё";
 			// 
 			// dateTimePicker5
 			// 
@@ -456,7 +422,7 @@ namespace LogisticsApp {
 			this->label47->Name = L"label47";
 			this->label47->Size = System::Drawing::Size(86, 20);
 			this->label47->TabIndex = 14;
-			this->label47->Text = L"Паспорт:";
+			this->label47->Text = L"РџР°СЃРїРѕСЂС‚:";
 			// 
 			// label48
 			// 
@@ -467,7 +433,7 @@ namespace LogisticsApp {
 			this->label48->Name = L"label48";
 			this->label48->Size = System::Drawing::Size(64, 20);
 			this->label48->TabIndex = 13;
-			this->label48->Text = L"Номер";
+			this->label48->Text = L"РќРѕРјРµСЂ";
 			// 
 			// textBox37
 			// 
@@ -486,7 +452,7 @@ namespace LogisticsApp {
 			this->label49->Name = L"label49";
 			this->label49->Size = System::Drawing::Size(61, 20);
 			this->label49->TabIndex = 11;
-			this->label49->Text = L"Серия";
+			this->label49->Text = L"РЎРµСЂРёСЏ";
 			// 
 			// textBox38
 			// 
@@ -505,7 +471,7 @@ namespace LogisticsApp {
 			this->label50->Name = L"label50";
 			this->label50->Size = System::Drawing::Size(91, 20);
 			this->label50->TabIndex = 9;
-			this->label50->Text = L"Отчество";
+			this->label50->Text = L"РћС‚С‡РµСЃС‚РІРѕ";
 			// 
 			// textBox39
 			// 
@@ -524,7 +490,7 @@ namespace LogisticsApp {
 			this->label51->Name = L"label51";
 			this->label51->Size = System::Drawing::Size(42, 20);
 			this->label51->TabIndex = 7;
-			this->label51->Text = L"Имя";
+			this->label51->Text = L"РРјСЏ";
 			// 
 			// textBox40
 			// 
@@ -543,7 +509,7 @@ namespace LogisticsApp {
 			this->label52->Name = L"label52";
 			this->label52->Size = System::Drawing::Size(87, 20);
 			this->label52->TabIndex = 5;
-			this->label52->Text = L"Фамилия";
+			this->label52->Text = L"Р¤Р°РјРёР»РёСЏ";
 			// 
 			// textBox41
 			// 
@@ -562,7 +528,7 @@ namespace LogisticsApp {
 			this->label53->Name = L"label53";
 			this->label53->Size = System::Drawing::Size(90, 20);
 			this->label53->TabIndex = 3;
-			this->label53->Text = L"Телефон:";
+			this->label53->Text = L"РўРµР»РµС„РѕРЅ:";
 			// 
 			// textBox42
 			// 
@@ -643,7 +609,7 @@ namespace LogisticsApp {
 			this->label33->Name = L"label33";
 			this->label33->Size = System::Drawing::Size(51, 20);
 			this->label33->TabIndex = 1002;
-			this->label33->Text = L"ОПФ";
+			this->label33->Text = L"РћРџР¤";
 			// 
 			// textBox26
 			// 
@@ -662,7 +628,7 @@ namespace LogisticsApp {
 			this->label34->Name = L"label34";
 			this->label34->Size = System::Drawing::Size(134, 20);
 			this->label34->TabIndex = 1000;
-			this->label34->Text = L"Наименование";
+			this->label34->Text = L"РќР°РёРјРµРЅРѕРІР°РЅРёРµ";
 			// 
 			// textBox27
 			// 
@@ -682,7 +648,7 @@ namespace LogisticsApp {
 			this->label35->Name = L"label35";
 			this->label35->Size = System::Drawing::Size(127, 20);
 			this->label35->TabIndex = 18;
-			this->label35->Text = L"ИНН Юр. Лица";
+			this->label35->Text = L"РРќРќ Р®СЂ. Р›РёС†Р°";
 			// 
 			// textBox28
 			// 
@@ -701,7 +667,7 @@ namespace LogisticsApp {
 			this->label36->Name = L"label36";
 			this->label36->Size = System::Drawing::Size(121, 20);
 			this->label36->TabIndex = 16;
-			this->label36->Text = L"Дата выдачи";
+			this->label36->Text = L"Р”Р°С‚Р° РІС‹РґР°С‡Рё";
 			// 
 			// dateTimePicker4
 			// 
@@ -719,7 +685,7 @@ namespace LogisticsApp {
 			this->label37->Name = L"label37";
 			this->label37->Size = System::Drawing::Size(86, 20);
 			this->label37->TabIndex = 14;
-			this->label37->Text = L"Паспорт:";
+			this->label37->Text = L"РџР°СЃРїРѕСЂС‚:";
 			// 
 			// label38
 			// 
@@ -730,7 +696,7 @@ namespace LogisticsApp {
 			this->label38->Name = L"label38";
 			this->label38->Size = System::Drawing::Size(64, 20);
 			this->label38->TabIndex = 13;
-			this->label38->Text = L"Номер";
+			this->label38->Text = L"РќРѕРјРµСЂ";
 			// 
 			// textBox29
 			// 
@@ -749,7 +715,7 @@ namespace LogisticsApp {
 			this->label39->Name = L"label39";
 			this->label39->Size = System::Drawing::Size(61, 20);
 			this->label39->TabIndex = 11;
-			this->label39->Text = L"Серия";
+			this->label39->Text = L"РЎРµСЂРёСЏ";
 			// 
 			// textBox30
 			// 
@@ -768,7 +734,7 @@ namespace LogisticsApp {
 			this->label40->Name = L"label40";
 			this->label40->Size = System::Drawing::Size(91, 20);
 			this->label40->TabIndex = 9;
-			this->label40->Text = L"Отчество";
+			this->label40->Text = L"РћС‚С‡РµСЃС‚РІРѕ";
 			// 
 			// textBox31
 			// 
@@ -787,7 +753,7 @@ namespace LogisticsApp {
 			this->label41->Name = L"label41";
 			this->label41->Size = System::Drawing::Size(42, 20);
 			this->label41->TabIndex = 7;
-			this->label41->Text = L"Имя";
+			this->label41->Text = L"РРјСЏ";
 			// 
 			// textBox32
 			// 
@@ -806,7 +772,7 @@ namespace LogisticsApp {
 			this->label42->Name = L"label42";
 			this->label42->Size = System::Drawing::Size(87, 20);
 			this->label42->TabIndex = 5;
-			this->label42->Text = L"Фамилия";
+			this->label42->Text = L"Р¤Р°РјРёР»РёСЏ";
 			// 
 			// textBox33
 			// 
@@ -825,7 +791,7 @@ namespace LogisticsApp {
 			this->label43->Name = L"label43";
 			this->label43->Size = System::Drawing::Size(90, 20);
 			this->label43->TabIndex = 3;
-			this->label43->Text = L"Телефон:";
+			this->label43->Text = L"РўРµР»РµС„РѕРЅ:";
 			// 
 			// textBox34
 			// 
@@ -844,7 +810,7 @@ namespace LogisticsApp {
 			this->label32->Name = L"label32";
 			this->label32->Size = System::Drawing::Size(46, 20);
 			this->label32->TabIndex = 1004;
-			this->label32->Text = L"КПП";
+			this->label32->Text = L"РљРџРџ";
 			// 
 			// label54
 			// 
@@ -855,7 +821,7 @@ namespace LogisticsApp {
 			this->label54->Name = L"label54";
 			this->label54->Size = System::Drawing::Size(121, 20);
 			this->label54->TabIndex = 16;
-			this->label54->Text = L"Дата выдачи";
+			this->label54->Text = L"Р”Р°С‚Р° РІС‹РґР°С‡Рё";
 			// 
 			// dateTimePicker6
 			// 
@@ -873,7 +839,7 @@ namespace LogisticsApp {
 			this->label55->Name = L"label55";
 			this->label55->Size = System::Drawing::Size(86, 20);
 			this->label55->TabIndex = 14;
-			this->label55->Text = L"Паспорт:";
+			this->label55->Text = L"РџР°СЃРїРѕСЂС‚:";
 			// 
 			// label56
 			// 
@@ -884,7 +850,7 @@ namespace LogisticsApp {
 			this->label56->Name = L"label56";
 			this->label56->Size = System::Drawing::Size(64, 20);
 			this->label56->TabIndex = 13;
-			this->label56->Text = L"Номер";
+			this->label56->Text = L"РќРѕРјРµСЂ";
 			// 
 			// textBox43
 			// 
@@ -903,7 +869,7 @@ namespace LogisticsApp {
 			this->label57->Name = L"label57";
 			this->label57->Size = System::Drawing::Size(61, 20);
 			this->label57->TabIndex = 11;
-			this->label57->Text = L"Серия";
+			this->label57->Text = L"РЎРµСЂРёСЏ";
 			// 
 			// textBox44
 			// 
@@ -922,7 +888,7 @@ namespace LogisticsApp {
 			this->label58->Name = L"label58";
 			this->label58->Size = System::Drawing::Size(91, 20);
 			this->label58->TabIndex = 9;
-			this->label58->Text = L"Отчество";
+			this->label58->Text = L"РћС‚С‡РµСЃС‚РІРѕ";
 			// 
 			// textBox45
 			// 
@@ -941,7 +907,7 @@ namespace LogisticsApp {
 			this->label59->Name = L"label59";
 			this->label59->Size = System::Drawing::Size(42, 20);
 			this->label59->TabIndex = 7;
-			this->label59->Text = L"Имя";
+			this->label59->Text = L"РРјСЏ";
 			// 
 			// textBox46
 			// 
@@ -960,7 +926,7 @@ namespace LogisticsApp {
 			this->label60->Name = L"label60";
 			this->label60->Size = System::Drawing::Size(87, 20);
 			this->label60->TabIndex = 5;
-			this->label60->Text = L"Фамилия";
+			this->label60->Text = L"Р¤Р°РјРёР»РёСЏ";
 			// 
 			// textBox47
 			// 
@@ -979,7 +945,7 @@ namespace LogisticsApp {
 			this->label61->Name = L"label61";
 			this->label61->Size = System::Drawing::Size(90, 20);
 			this->label61->TabIndex = 3;
-			this->label61->Text = L"Телефон:";
+			this->label61->Text = L"РўРµР»РµС„РѕРЅ:";
 			// 
 			// textBox48
 			// 
@@ -1010,7 +976,7 @@ namespace LogisticsApp {
 			this->btnRecipientLegacy->Size = System::Drawing::Size(199, 71);
 			this->btnRecipientLegacy->TabIndex = 2;
 			this->btnRecipientLegacy->TabStop = true;
-			this->btnRecipientLegacy->Text = L"Юр. Лицо";
+			this->btnRecipientLegacy->Text = L"Р®СЂ. Р›РёС†Рѕ";
 			this->btnRecipientLegacy->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->btnRecipientLegacy->UseVisualStyleBackColor = true;
 			this->btnRecipientLegacy->CheckedChanged += gcnew System::EventHandler(this, &LoginWindow::btnRecipientLegacy_CheckedChanged);
@@ -1025,7 +991,7 @@ namespace LogisticsApp {
 			this->btnRecipientIP->Size = System::Drawing::Size(199, 71);
 			this->btnRecipientIP->TabIndex = 1;
 			this->btnRecipientIP->TabStop = true;
-			this->btnRecipientIP->Text = L"ИП";
+			this->btnRecipientIP->Text = L"РРџ";
 			this->btnRecipientIP->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->btnRecipientIP->UseVisualStyleBackColor = true;
 			this->btnRecipientIP->CheckedChanged += gcnew System::EventHandler(this, &LoginWindow::btnRecipientIP_CheckedChanged);
@@ -1040,7 +1006,7 @@ namespace LogisticsApp {
 			this->btnRecipientPerson->Size = System::Drawing::Size(199, 71);
 			this->btnRecipientPerson->TabIndex = 0;
 			this->btnRecipientPerson->TabStop = true;
-			this->btnRecipientPerson->Text = L"Физ. Лицо";
+			this->btnRecipientPerson->Text = L"Р¤РёР·. Р›РёС†Рѕ";
 			this->btnRecipientPerson->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->btnRecipientPerson->UseVisualStyleBackColor = true;
 			this->btnRecipientPerson->CheckedChanged += gcnew System::EventHandler(this, &LoginWindow::btnRecipientPerson_CheckedChanged);
@@ -1054,7 +1020,7 @@ namespace LogisticsApp {
 			this->label62->Name = L"label62";
 			this->label62->Size = System::Drawing::Size(130, 25);
 			this->label62->TabIndex = 1002;
-			this->label62->Text = L"Получатель:";
+			this->label62->Text = L"РџРѕР»СѓС‡Р°С‚РµР»СЊ:";
 			// 
 			// pnSenderLegal
 			// 
@@ -1096,7 +1062,7 @@ namespace LogisticsApp {
 			this->label31->Name = L"label31";
 			this->label31->Size = System::Drawing::Size(46, 20);
 			this->label31->TabIndex = 1004;
-			this->label31->Text = L"КПП";
+			this->label31->Text = L"РљРџРџ";
 			// 
 			// textBox24
 			// 
@@ -1115,7 +1081,7 @@ namespace LogisticsApp {
 			this->label30->Name = L"label30";
 			this->label30->Size = System::Drawing::Size(51, 20);
 			this->label30->TabIndex = 1002;
-			this->label30->Text = L"ОПФ";
+			this->label30->Text = L"РћРџР¤";
 			// 
 			// textBox23
 			// 
@@ -1134,7 +1100,7 @@ namespace LogisticsApp {
 			this->label20->Name = L"label20";
 			this->label20->Size = System::Drawing::Size(134, 20);
 			this->label20->TabIndex = 1000;
-			this->label20->Text = L"Наименование";
+			this->label20->Text = L"РќР°РёРјРµРЅРѕРІР°РЅРёРµ";
 			// 
 			// textBox15
 			// 
@@ -1154,7 +1120,7 @@ namespace LogisticsApp {
 			this->label21->Name = L"label21";
 			this->label21->Size = System::Drawing::Size(127, 20);
 			this->label21->TabIndex = 18;
-			this->label21->Text = L"ИНН Юр. Лица";
+			this->label21->Text = L"РРќРќ Р®СЂ. Р›РёС†Р°";
 			// 
 			// textBox16
 			// 
@@ -1173,7 +1139,7 @@ namespace LogisticsApp {
 			this->label22->Name = L"label22";
 			this->label22->Size = System::Drawing::Size(121, 20);
 			this->label22->TabIndex = 16;
-			this->label22->Text = L"Дата выдачи";
+			this->label22->Text = L"Р”Р°С‚Р° РІС‹РґР°С‡Рё";
 			// 
 			// dateTimePicker3
 			// 
@@ -1191,7 +1157,7 @@ namespace LogisticsApp {
 			this->label23->Name = L"label23";
 			this->label23->Size = System::Drawing::Size(86, 20);
 			this->label23->TabIndex = 14;
-			this->label23->Text = L"Паспорт:";
+			this->label23->Text = L"РџР°СЃРїРѕСЂС‚:";
 			// 
 			// label24
 			// 
@@ -1202,7 +1168,7 @@ namespace LogisticsApp {
 			this->label24->Name = L"label24";
 			this->label24->Size = System::Drawing::Size(64, 20);
 			this->label24->TabIndex = 13;
-			this->label24->Text = L"Номер";
+			this->label24->Text = L"РќРѕРјРµСЂ";
 			// 
 			// textBox17
 			// 
@@ -1221,7 +1187,7 @@ namespace LogisticsApp {
 			this->label25->Name = L"label25";
 			this->label25->Size = System::Drawing::Size(61, 20);
 			this->label25->TabIndex = 11;
-			this->label25->Text = L"Серия";
+			this->label25->Text = L"РЎРµСЂРёСЏ";
 			// 
 			// textBox18
 			// 
@@ -1240,7 +1206,7 @@ namespace LogisticsApp {
 			this->label26->Name = L"label26";
 			this->label26->Size = System::Drawing::Size(91, 20);
 			this->label26->TabIndex = 9;
-			this->label26->Text = L"Отчество";
+			this->label26->Text = L"РћС‚С‡РµСЃС‚РІРѕ";
 			// 
 			// textBox19
 			// 
@@ -1259,7 +1225,7 @@ namespace LogisticsApp {
 			this->label27->Name = L"label27";
 			this->label27->Size = System::Drawing::Size(42, 20);
 			this->label27->TabIndex = 7;
-			this->label27->Text = L"Имя";
+			this->label27->Text = L"РРјСЏ";
 			// 
 			// textBox20
 			// 
@@ -1278,7 +1244,7 @@ namespace LogisticsApp {
 			this->label28->Name = L"label28";
 			this->label28->Size = System::Drawing::Size(87, 20);
 			this->label28->TabIndex = 5;
-			this->label28->Text = L"Фамилия";
+			this->label28->Text = L"Р¤Р°РјРёР»РёСЏ";
 			// 
 			// textBox21
 			// 
@@ -1297,7 +1263,7 @@ namespace LogisticsApp {
 			this->label29->Name = L"label29";
 			this->label29->Size = System::Drawing::Size(90, 20);
 			this->label29->TabIndex = 3;
-			this->label29->Text = L"Телефон:";
+			this->label29->Text = L"РўРµР»РµС„РѕРЅ:";
 			// 
 			// textBox22
 			// 
@@ -1343,7 +1309,7 @@ namespace LogisticsApp {
 			this->label19->Name = L"label19";
 			this->label19->Size = System::Drawing::Size(134, 20);
 			this->label19->TabIndex = 1000;
-			this->label19->Text = L"Наименование";
+			this->label19->Text = L"РќР°РёРјРµРЅРѕРІР°РЅРёРµ";
 			// 
 			// textBox14
 			// 
@@ -1363,7 +1329,7 @@ namespace LogisticsApp {
 			this->label18->Name = L"label18";
 			this->label18->Size = System::Drawing::Size(75, 20);
 			this->label18->TabIndex = 18;
-			this->label18->Text = L"ИНН ИП";
+			this->label18->Text = L"РРќРќ РРџ";
 			// 
 			// textBox13
 			// 
@@ -1383,7 +1349,7 @@ namespace LogisticsApp {
 			this->label10->Name = L"label10";
 			this->label10->Size = System::Drawing::Size(121, 20);
 			this->label10->TabIndex = 16;
-			this->label10->Text = L"Дата выдачи";
+			this->label10->Text = L"Р”Р°С‚Р° РІС‹РґР°С‡Рё";
 			// 
 			// dateTimePicker2
 			// 
@@ -1401,7 +1367,7 @@ namespace LogisticsApp {
 			this->label11->Name = L"label11";
 			this->label11->Size = System::Drawing::Size(86, 20);
 			this->label11->TabIndex = 14;
-			this->label11->Text = L"Паспорт:";
+			this->label11->Text = L"РџР°СЃРїРѕСЂС‚:";
 			// 
 			// label12
 			// 
@@ -1412,7 +1378,7 @@ namespace LogisticsApp {
 			this->label12->Name = L"label12";
 			this->label12->Size = System::Drawing::Size(64, 20);
 			this->label12->TabIndex = 13;
-			this->label12->Text = L"Номер";
+			this->label12->Text = L"РќРѕРјРµСЂ";
 			// 
 			// textBox7
 			// 
@@ -1431,7 +1397,7 @@ namespace LogisticsApp {
 			this->label13->Name = L"label13";
 			this->label13->Size = System::Drawing::Size(61, 20);
 			this->label13->TabIndex = 11;
-			this->label13->Text = L"Серия";
+			this->label13->Text = L"РЎРµСЂРёСЏ";
 			// 
 			// textBox8
 			// 
@@ -1450,7 +1416,7 @@ namespace LogisticsApp {
 			this->label14->Name = L"label14";
 			this->label14->Size = System::Drawing::Size(91, 20);
 			this->label14->TabIndex = 9;
-			this->label14->Text = L"Отчество";
+			this->label14->Text = L"РћС‚С‡РµСЃС‚РІРѕ";
 			// 
 			// textBox9
 			// 
@@ -1469,7 +1435,7 @@ namespace LogisticsApp {
 			this->label15->Name = L"label15";
 			this->label15->Size = System::Drawing::Size(42, 20);
 			this->label15->TabIndex = 7;
-			this->label15->Text = L"Имя";
+			this->label15->Text = L"РРјСЏ";
 			// 
 			// textBox10
 			// 
@@ -1488,7 +1454,7 @@ namespace LogisticsApp {
 			this->label16->Name = L"label16";
 			this->label16->Size = System::Drawing::Size(87, 20);
 			this->label16->TabIndex = 5;
-			this->label16->Text = L"Фамилия";
+			this->label16->Text = L"Р¤Р°РјРёР»РёСЏ";
 			// 
 			// textBox11
 			// 
@@ -1507,7 +1473,7 @@ namespace LogisticsApp {
 			this->label17->Name = L"label17";
 			this->label17->Size = System::Drawing::Size(90, 20);
 			this->label17->TabIndex = 3;
-			this->label17->Text = L"Телефон:";
+			this->label17->Text = L"РўРµР»РµС„РѕРЅ:";
 			// 
 			// textBox12
 			// 
@@ -1549,7 +1515,7 @@ namespace LogisticsApp {
 			this->label9->Name = L"label9";
 			this->label9->Size = System::Drawing::Size(121, 20);
 			this->label9->TabIndex = 16;
-			this->label9->Text = L"Дата выдачи";
+			this->label9->Text = L"Р”Р°С‚Р° РІС‹РґР°С‡Рё";
 			// 
 			// dateTimePicker1
 			// 
@@ -1567,7 +1533,7 @@ namespace LogisticsApp {
 			this->label8->Name = L"label8";
 			this->label8->Size = System::Drawing::Size(86, 20);
 			this->label8->TabIndex = 14;
-			this->label8->Text = L"Паспорт:";
+			this->label8->Text = L"РџР°СЃРїРѕСЂС‚:";
 			// 
 			// label7
 			// 
@@ -1578,7 +1544,7 @@ namespace LogisticsApp {
 			this->label7->Name = L"label7";
 			this->label7->Size = System::Drawing::Size(64, 20);
 			this->label7->TabIndex = 13;
-			this->label7->Text = L"Номер";
+			this->label7->Text = L"РќРѕРјРµСЂ";
 			// 
 			// textBox6
 			// 
@@ -1597,7 +1563,7 @@ namespace LogisticsApp {
 			this->label6->Name = L"label6";
 			this->label6->Size = System::Drawing::Size(61, 20);
 			this->label6->TabIndex = 11;
-			this->label6->Text = L"Серия";
+			this->label6->Text = L"РЎРµСЂРёСЏ";
 			// 
 			// textBox5
 			// 
@@ -1616,7 +1582,7 @@ namespace LogisticsApp {
 			this->label5->Name = L"label5";
 			this->label5->Size = System::Drawing::Size(91, 20);
 			this->label5->TabIndex = 9;
-			this->label5->Text = L"Отчество";
+			this->label5->Text = L"РћС‚С‡РµСЃС‚РІРѕ";
 			// 
 			// textBox4
 			// 
@@ -1635,7 +1601,7 @@ namespace LogisticsApp {
 			this->label4->Name = L"label4";
 			this->label4->Size = System::Drawing::Size(42, 20);
 			this->label4->TabIndex = 7;
-			this->label4->Text = L"Имя";
+			this->label4->Text = L"РРјСЏ";
 			// 
 			// textBox3
 			// 
@@ -1654,7 +1620,7 @@ namespace LogisticsApp {
 			this->label3->Name = L"label3";
 			this->label3->Size = System::Drawing::Size(87, 20);
 			this->label3->TabIndex = 5;
-			this->label3->Text = L"Фамилия";
+			this->label3->Text = L"Р¤Р°РјРёР»РёСЏ";
 			// 
 			// textBox2
 			// 
@@ -1673,7 +1639,7 @@ namespace LogisticsApp {
 			this->label2->Name = L"label2";
 			this->label2->Size = System::Drawing::Size(90, 20);
 			this->label2->TabIndex = 3;
-			this->label2->Text = L"Телефон:";
+			this->label2->Text = L"РўРµР»РµС„РѕРЅ:";
 			// 
 			// textBox1
 			// 
@@ -1704,7 +1670,7 @@ namespace LogisticsApp {
 			this->btnSenderLegal->Size = System::Drawing::Size(199, 71);
 			this->btnSenderLegal->TabIndex = 2;
 			this->btnSenderLegal->TabStop = true;
-			this->btnSenderLegal->Text = L"Юр. Лицо";
+			this->btnSenderLegal->Text = L"Р®СЂ. Р›РёС†Рѕ";
 			this->btnSenderLegal->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->btnSenderLegal->UseVisualStyleBackColor = true;
 			this->btnSenderLegal->CheckedChanged += gcnew System::EventHandler(this, &LoginWindow::btnSenderLegal_CheckedChanged);
@@ -1719,7 +1685,7 @@ namespace LogisticsApp {
 			this->btnSenderIP->Size = System::Drawing::Size(199, 71);
 			this->btnSenderIP->TabIndex = 1;
 			this->btnSenderIP->TabStop = true;
-			this->btnSenderIP->Text = L"ИП";
+			this->btnSenderIP->Text = L"РРџ";
 			this->btnSenderIP->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->btnSenderIP->UseVisualStyleBackColor = true;
 			this->btnSenderIP->CheckedChanged += gcnew System::EventHandler(this, &LoginWindow::btnSenderIP_CheckedChanged);
@@ -1734,7 +1700,7 @@ namespace LogisticsApp {
 			this->btnSenderPerson->Size = System::Drawing::Size(199, 71);
 			this->btnSenderPerson->TabIndex = 0;
 			this->btnSenderPerson->TabStop = true;
-			this->btnSenderPerson->Text = L"Физ. Лицо";
+			this->btnSenderPerson->Text = L"Р¤РёР·. Р›РёС†Рѕ";
 			this->btnSenderPerson->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->btnSenderPerson->UseVisualStyleBackColor = true;
 			this->btnSenderPerson->CheckedChanged += gcnew System::EventHandler(this, &LoginWindow::btnSenderPerson_CheckedChanged);
@@ -1748,7 +1714,7 @@ namespace LogisticsApp {
 			this->label1->Name = L"label1";
 			this->label1->Size = System::Drawing::Size(143, 25);
 			this->label1->TabIndex = 0;
-			this->label1->Text = L"Отправитель:";
+			this->label1->Text = L"РћС‚РїСЂР°РІРёС‚РµР»СЊ:";
 			// 
 			// btnApproveForms
 			// 
@@ -1758,7 +1724,7 @@ namespace LogisticsApp {
 			this->btnApproveForms->Name = L"btnApproveForms";
 			this->btnApproveForms->Size = System::Drawing::Size(502, 120);
 			this->btnApproveForms->TabIndex = 1007;
-			this->btnApproveForms->Text = L"Оформить заявку";
+			this->btnApproveForms->Text = L"РћС„РѕСЂРјРёС‚СЊ Р·Р°СЏРІРєСѓ";
 			this->btnApproveForms->UseVisualStyleBackColor = true;
 			this->btnApproveForms->Click += gcnew System::EventHandler(this, &LoginWindow::btnApproveForms_Click);
 			// 
@@ -1771,7 +1737,7 @@ namespace LogisticsApp {
 			this->ClientSize = System::Drawing::Size(1605, 820);
 			this->Controls->Add(this->panel1);
 			this->Name = L"LoginWindow";
-			this->Text = L"Заказать перевозку";
+			this->Text = L"Р—Р°РєР°Р·Р°С‚СЊ РїРµСЂРµРІРѕР·РєСѓ";
 			this->Load += gcnew System::EventHandler(this, &LoginWindow::LoginWindow_Load);
 			this->panel1->ResumeLayout(false);
 			this->panel1->PerformLayout();
@@ -1855,7 +1821,7 @@ namespace LogisticsApp {
 		SetRecipientType(2);
 	}
 	private: System::Void btnApproveForms_Click(System::Object^ sender, System::EventArgs^ e) {
-		System::Windows::Forms::MessageBox::Show("Ваш заказ успешно оформлен, ожидайте звонка от нашего оператора!", "Успех!");
+		System::Windows::Forms::MessageBox::Show("Р’Р°С€ Р·Р°РєР°Р· СѓСЃРїРµС€РЅРѕ РѕС„РѕСЂРјР»РµРЅ, РѕР¶РёРґР°Р№С‚Рµ Р·РІРѕРЅРєР° РѕС‚ РЅР°С€РµРіРѕ РѕРїРµСЂР°С‚РѕСЂР°!", "РЈСЃРїРµС…!");
 		this->Close();
 	}
 	};

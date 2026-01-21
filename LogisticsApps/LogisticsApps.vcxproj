@@ -140,6 +140,12 @@
     <ClInclude Include="StartWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="UITheme.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="StartWindow.resx">
+      <DependentUpon>StartWindow.h</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

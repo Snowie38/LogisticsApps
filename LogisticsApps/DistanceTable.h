@@ -8,5 +8,4 @@ struct DistanceRow
     int km;
 };
 
-
 int GetDistanceKm(const std::wstring& from, const std::wstring& to);

@@ -369,6 +369,7 @@ namespace LogisticsApp {
             dgvOrders->AutoGenerateColumns = true;
             dgvOrders->DataSource = AppStorage::Orders();
             dgvOrders->SelectionChanged += gcnew EventHandler(this, &AdminWindow::OnOrderSelectionChanged);
+            dgvOrders->DataBindingComplete += gcnew DataGridViewBindingCompleteEventHandler(this, &AdminWindow::OnOrdersDataBindingComplete);
             lay->Controls->Add(dgvOrders, 0, 0);
 
             Panel^ tools = gcnew Panel();
@@ -421,38 +422,182 @@ namespace LogisticsApp {
             ConfigureOrdersGrid(); // <-- фиксируем колонки и ширины
         }
 
-        void ConfigureOrdersGrid()
+        void OnOrdersDataBindingComplete(System::Object^ sender, DataGridViewBindingCompleteEventArgs^ e)
+        {
+            // После привязки данных столбцы уже созданы — можно настроить отображение
+            ConfigureOrdersGrid();
+        }
+
+        bool IsNameInList(String^ name, array<String^>^ list)
+        {
+            if (list == nullptr) return false;
+            for each (String ^ s in list)
+            {
+                if (String::Equals(s, name)) return true;
+            }
+            return false;
+        }
+
+        void TrySetHeader(String^ name, String^ header)
+        {
+            if (dgvOrders == nullptr) return;
+            if (!dgvOrders->Columns->Contains(name)) return;
+            dgvOrders->Columns[name]->HeaderText = header;
+        }
+
+        void TrySetWidth(String^ name, int width)
+        {
+            if (dgvOrders == nullptr) return;
+            if (!dgvOrders->Columns->Contains(name)) return;
+            DataGridViewColumn^ c = dgvOrders->Columns[name];
+            c->Width = width;
+        }
+
+        void TrySetFormat(String^ name, String^ format)
+        {
+            if (dgvOrders == nullptr) return;
+            if (!dgvOrders->Columns->Contains(name)) return;
+            dgvOrders->Columns[name]->DefaultCellStyle->Format = format;
+        }
+
+        void ApplyOrdersDisplayOrder()
         {
             if (dgvOrders == nullptr) return;
 
-            dgvOrders->AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode::None;
-            dgvOrders->ScrollBars = ScrollBars::Both;
+            array<String^>^ preferred = gcnew array<String^>{
+                "Id", "CreatedAt", "UpdatedAt", "Status",
+                    "SenderType", "SenderName", "SenderPhone",
+                    "SenderInn", "SenderOrgName", "SenderOpf", "SenderKpp",
+                    "SenderPassSeries", "SenderPassNumber", "SenderPassDate",
+                    "RecipientType", "RecipientName", "RecipientPhone",
+                    "RecipientInn", "RecipientOrgName", "RecipientOpf", "RecipientKpp",
+                    "RecipientPassSeries", "RecipientPassNumber", "RecipientPassDate",
+                    "CityFrom", "FromAddress", "PickupFromAddress",
+                    "CityTo", "ToAddress", "DeliveryToAddress",
+                    "DistanceKm", "CargoType", "CargoTypeIndex",
+                    "WeightKg", "VolumeM3", "LengthM", "DeclaredValue",
+                    "DeliveryType",
+                    "OptProtectPack", "OptPallet", "OptFloorDelivery", "OptDocsA", "OptDocsB",
+                    "BaseCost", "OptionsCost", "InsuranceCost", "TotalCost"
+            };
 
-            // Скрываем всё, потом включаем нужное (если колонки существуют в DataTable)
-            for each (DataGridViewColumn ^ c in dgvOrders->Columns)
+            int idx = 0;
+            for each (String ^ col in preferred)
             {
-                c->Visible = false;
-                c->SortMode = DataGridViewColumnSortMode::Automatic;
+                if (dgvOrders->Columns->Contains(col))
+                {
+                    dgvOrders->Columns[col]->DisplayIndex = idx;
+                    idx++;
+                }
             }
 
-            ShowOrderColumn("Id", "ID", 60);
-            ShowOrderColumn("CreatedAt", "Дата", 140);
-            ShowOrderColumn("Status", "Статус", 120);
-            ShowOrderColumn("CityFrom", "Откуда", 140);
-            ShowOrderColumn("CityTo", "Куда", 140);
-            ShowOrderColumn("DistanceKm", "Км", 70);
-            ShowOrderColumn("CargoType", "Груз", 140);
-            ShowOrderColumn("WeightKg", "Вес", 80);
-            ShowOrderColumn("OptionsCost", "Серв.", 90);
-            ShowOrderColumn("TotalCost", "Итого", 110);
-            ShowOrderColumn("RecipientName", "Получатель", 160);
-            ShowOrderColumn("RecipientPhone", "Телефон", 140);
+            // Остальные столбцы — в конец
+            for each (DataGridViewColumn ^ c in dgvOrders->Columns)
+            {
+                if (!IsNameInList(c->Name, preferred))
+                {
+                    c->DisplayIndex = idx;
+                    idx++;
+                }
+            }
+        }
 
-            // формат денег
-            if (dgvOrders->Columns->Contains("TotalCost"))
-                dgvOrders->Columns["TotalCost"]->DefaultCellStyle->Format = "N0";
-            if (dgvOrders->Columns->Contains("OptionsCost"))
-                dgvOrders->Columns["OptionsCost"]->DefaultCellStyle->Format = "N0";
+        void ConfigureOrdersGrid()
+        {
+            if (dgvOrders == nullptr) return;
+            if (dgvOrders->Columns == nullptr) return;
+
+            // Показываем ВСЕ столбцы, которые есть в таблице Orders
+            dgvOrders->AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode::DisplayedCells;
+            dgvOrders->ScrollBars = ScrollBars::Both;
+
+            for each (DataGridViewColumn ^ c in dgvOrders->Columns)
+            {
+                c->Visible = true;
+                c->SortMode = DataGridViewColumnSortMode::Automatic;
+                c->MinimumWidth = 60;
+            }
+
+            // Читаемые заголовки (не обязательно, но сильно помогает)
+            TrySetHeader("Id", "ID");
+            TrySetHeader("CreatedAt", "Создан");
+            TrySetHeader("UpdatedAt", "Обновлен");
+            TrySetHeader("Status", "Статус");
+
+            TrySetHeader("SenderType", "Тип отправителя");
+            TrySetHeader("SenderName", "ФИО отправителя");
+            TrySetHeader("SenderPhone", "Телефон отправителя");
+            TrySetHeader("SenderInn", "ИНН отправителя");
+            TrySetHeader("SenderOrgName", "Орг. название отправителя");
+            TrySetHeader("SenderOpf", "ОПФ отправителя");
+            TrySetHeader("SenderKpp", "КПП отправителя");
+            TrySetHeader("SenderPassSeries", "Паспорт серия (отпр.)");
+            TrySetHeader("SenderPassNumber", "Паспорт номер (отпр.)");
+            TrySetHeader("SenderPassDate", "Дата паспорта (отпр.)");
+
+            TrySetHeader("RecipientType", "Тип получателя");
+            TrySetHeader("RecipientName", "ФИО получателя");
+            TrySetHeader("RecipientPhone", "Телефон получателя");
+            TrySetHeader("RecipientInn", "ИНН получателя");
+            TrySetHeader("RecipientOrgName", "Орг. название получателя");
+            TrySetHeader("RecipientOpf", "ОПФ получателя");
+            TrySetHeader("RecipientKpp", "КПП получателя");
+            TrySetHeader("RecipientPassSeries", "Паспорт серия (пол.)");
+            TrySetHeader("RecipientPassNumber", "Паспорт номер (пол.)");
+            TrySetHeader("RecipientPassDate", "Дата паспорта (пол.)");
+
+            TrySetHeader("CityFrom", "Город отправления");
+            TrySetHeader("FromAddress", "Адрес забора");
+            TrySetHeader("PickupFromAddress", "Забор с адреса");
+
+            TrySetHeader("CityTo", "Город доставки");
+            TrySetHeader("ToAddress", "Адрес доставки");
+            TrySetHeader("DeliveryToAddress", "Доставка до адреса");
+
+            TrySetHeader("DistanceKm", "Км");
+            TrySetHeader("CargoType", "Тип груза");
+            TrySetHeader("CargoTypeIndex", "Индекс типа груза");
+            TrySetHeader("WeightKg", "Вес (кг)");
+            TrySetHeader("VolumeM3", "Объем (м3)");
+            TrySetHeader("LengthM", "Длина (м)");
+            TrySetHeader("DeclaredValue", "Оценочная стоимость");
+            TrySetHeader("DeliveryType", "Тип доставки");
+
+            TrySetHeader("OptProtectPack", "Защитная упаковка");
+            TrySetHeader("OptPallet", "Паллет");
+            TrySetHeader("OptFloorDelivery", "Подъем на этаж");
+            TrySetHeader("OptDocsA", "Документы A");
+            TrySetHeader("OptDocsB", "Документы B");
+
+            TrySetHeader("BaseCost", "База, руб");
+            TrySetHeader("OptionsCost", "Опции, руб");
+            TrySetHeader("InsuranceCost", "Страхование, руб");
+            TrySetHeader("TotalCost", "Итого, руб");
+
+            // Форматы
+            TrySetFormat("CreatedAt", "dd.MM.yyyy HH:mm");
+            TrySetFormat("UpdatedAt", "dd.MM.yyyy HH:mm");
+            TrySetFormat("SenderPassDate", "dd.MM.yyyy");
+            TrySetFormat("RecipientPassDate", "dd.MM.yyyy");
+
+            TrySetFormat("WeightKg", "N2");
+            TrySetFormat("VolumeM3", "N3");
+            TrySetFormat("LengthM", "N2");
+            TrySetFormat("DeclaredValue", "N0");
+            TrySetFormat("BaseCost", "N0");
+            TrySetFormat("OptionsCost", "N0");
+            TrySetFormat("InsuranceCost", "N0");
+            TrySetFormat("TotalCost", "N0");
+
+            // Чуть более удобные ширины для ключевых полей
+            TrySetWidth("SenderName", 180);
+            TrySetWidth("RecipientName", 180);
+            TrySetWidth("SenderOrgName", 220);
+            TrySetWidth("RecipientOrgName", 220);
+            TrySetWidth("FromAddress", 220);
+            TrySetWidth("ToAddress", 220);
+
+            ApplyOrdersDisplayOrder();
         }
 
         void ShowOrderColumn(String^ name, String^ header, int width)

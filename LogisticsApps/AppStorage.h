@@ -67,6 +67,24 @@ namespace LogisticsApp {
 				t->Columns->Add(c);
 			}
 		}
+		// Перегрузки, чтобы избежать предупреждения C4965 (неявная упаковка литералов 0/false)
+		static void EnsureColumn(DataTable^ t, String^ name, Type^ type, int defaultValue)
+		{
+			EnsureColumn(t, name, type, safe_cast<Object^>(defaultValue));
+		}
+		static void EnsureColumn(DataTable^ t, String^ name, Type^ type, double defaultValue)
+		{
+			EnsureColumn(t, name, type, safe_cast<Object^>(defaultValue));
+		}
+		static void EnsureColumn(DataTable^ t, String^ name, Type^ type, bool defaultValue)
+		{
+			EnsureColumn(t, name, type, safe_cast<Object^>(defaultValue));
+		}
+		static void EnsureColumn(DataTable^ t, String^ name, Type^ type, DateTime defaultValue)
+		{
+			EnsureColumn(t, name, type, safe_cast<Object^>(defaultValue));
+		}
+
 
 		static DataTable^ BuildOrders()
 		{
@@ -87,6 +105,23 @@ namespace LogisticsApp {
 			t->Columns->Add("RecipientName", String::typeid);
 			t->Columns->Add("RecipientPhone", String::typeid);
 			t->Columns->Add("RecipientType", String::typeid);
+
+			// Доп. данные отправителя/получателя (ИНН/организация/паспорт) — из LoginWindow
+			t->Columns->Add("SenderInn", String::typeid);
+			t->Columns->Add("SenderOrgName", String::typeid);
+			t->Columns->Add("SenderOpf", String::typeid);
+			t->Columns->Add("SenderKpp", String::typeid);
+			t->Columns->Add("SenderPassSeries", String::typeid);
+			t->Columns->Add("SenderPassNumber", String::typeid);
+			t->Columns->Add("SenderPassDate", DateTime::typeid);
+
+			t->Columns->Add("RecipientInn", String::typeid);
+			t->Columns->Add("RecipientOrgName", String::typeid);
+			t->Columns->Add("RecipientOpf", String::typeid);
+			t->Columns->Add("RecipientKpp", String::typeid);
+			t->Columns->Add("RecipientPassSeries", String::typeid);
+			t->Columns->Add("RecipientPassNumber", String::typeid);
+			t->Columns->Add("RecipientPassDate", DateTime::typeid);
 
 			// Маршрут / груз (из ClientWindow)
 			t->Columns->Add("CityFrom", String::typeid);
@@ -128,6 +163,10 @@ namespace LogisticsApp {
 			t->Columns["Status"]->DefaultValue = "Создан";
 			t->Columns["CreatedAt"]->DefaultValue = DateTime::Now;
 			t->Columns["UpdatedAt"]->DefaultValue = DateTime::Now;
+
+			// Паспортные даты по умолчанию
+			if (t->Columns->Contains("SenderPassDate")) t->Columns["SenderPassDate"]->DefaultValue = DateTime::MinValue;
+			if (t->Columns->Contains("RecipientPassDate")) t->Columns["RecipientPassDate"]->DefaultValue = DateTime::MinValue;
 
 			return t;
 		}
@@ -217,6 +256,24 @@ namespace LogisticsApp {
 			EnsureColumn(_orders, "RecipientName", String::typeid, "");
 			EnsureColumn(_orders, "RecipientPhone", String::typeid, "");
 			EnsureColumn(_orders, "RecipientType", String::typeid, "");
+
+			// Доп. данные отправителя/получателя (ИНН/организация/паспорт) — используются в форме оформления заказа
+			EnsureColumn(_orders, "SenderInn", String::typeid, "");
+			EnsureColumn(_orders, "SenderOrgName", String::typeid, "");
+			EnsureColumn(_orders, "SenderOpf", String::typeid, "");
+			EnsureColumn(_orders, "SenderKpp", String::typeid, "");
+			EnsureColumn(_orders, "SenderPassSeries", String::typeid, "");
+			EnsureColumn(_orders, "SenderPassNumber", String::typeid, "");
+			EnsureColumn(_orders, "SenderPassDate", DateTime::typeid, DateTime::MinValue);
+
+			EnsureColumn(_orders, "RecipientInn", String::typeid, "");
+			EnsureColumn(_orders, "RecipientOrgName", String::typeid, "");
+			EnsureColumn(_orders, "RecipientOpf", String::typeid, "");
+			EnsureColumn(_orders, "RecipientKpp", String::typeid, "");
+			EnsureColumn(_orders, "RecipientPassSeries", String::typeid, "");
+			EnsureColumn(_orders, "RecipientPassNumber", String::typeid, "");
+			EnsureColumn(_orders, "RecipientPassDate", DateTime::typeid, DateTime::MinValue);
+
 
 			EnsureColumn(_orders, "CityFrom", String::typeid, "");
 			EnsureColumn(_orders, "CityTo", String::typeid, "");
@@ -356,6 +413,115 @@ namespace LogisticsApp {
 			Save();
 		}
 
+
+		// Расширенная перегрузка AddOrder — соответствует параметрам из LoginWindow.h (оформление заказа)
+		static int AddOrder(
+			OrderDraft^ d,
+			String^ senderName, String^ senderPhone, String^ senderType,
+			String^ recipientName, String^ recipientPhone, String^ recipientType,
+			String^ senderInn, String^ senderOrgName, String^ senderOpf, String^ senderKpp,
+			String^ senderPassSeries, String^ senderPassNumber, DateTime senderPassDate,
+			String^ recipientInn, String^ recipientOrgName, String^ recipientOpf, String^ recipientKpp,
+			String^ recipientPassSeries, String^ recipientPassNumber, DateTime recipientPassDate)
+		{
+			Init();
+			if (d == nullptr) return -1;
+
+			DataRow^ r = _orders->NewRow();
+			r["SenderName"] = senderName;
+			r["SenderPhone"] = senderPhone;
+			r["SenderType"] = senderType;
+
+			r["RecipientName"] = recipientName;
+			r["RecipientPhone"] = recipientPhone;
+			r["RecipientType"] = recipientType;
+
+			r["SenderInn"] = senderInn;
+			r["SenderOrgName"] = senderOrgName;
+			r["SenderOpf"] = senderOpf;
+			r["SenderKpp"] = senderKpp;
+			r["SenderPassSeries"] = senderPassSeries;
+			r["SenderPassNumber"] = senderPassNumber;
+			r["SenderPassDate"] = senderPassDate;
+
+			r["RecipientInn"] = recipientInn;
+			r["RecipientOrgName"] = recipientOrgName;
+			r["RecipientOpf"] = recipientOpf;
+			r["RecipientKpp"] = recipientKpp;
+			r["RecipientPassSeries"] = recipientPassSeries;
+			r["RecipientPassNumber"] = recipientPassNumber;
+			r["RecipientPassDate"] = recipientPassDate;
+
+			r["CityFrom"] = d->CityFrom;
+			r["CityTo"] = d->CityTo;
+			r["DistanceKm"] = d->DistanceKm;
+
+			r["CargoType"] = d->CargoType;
+			r["CargoTypeIndex"] = d->CargoTypeIndex;
+			r["WeightKg"] = d->WeightKg;
+			r["VolumeM3"] = d->VolumeM3;
+			r["LengthM"] = d->LengthM;
+			r["DeclaredValue"] = d->DeclaredValue;
+
+			r["PickupFromAddress"] = d->PickupFromAddress;
+			r["DeliveryToAddress"] = d->DeliveryToAddress;
+			r["FromAddress"] = d->FromAddress;
+			r["ToAddress"] = d->ToAddress;
+
+			r["OptProtectPack"] = d->OptProtectPack;
+			r["OptPallet"] = d->OptPallet;
+			r["OptFloorDelivery"] = d->OptFloorDelivery;
+			r["OptDocsA"] = d->OptDocsA;
+			r["OptDocsB"] = d->OptDocsB;
+
+			r["DeliveryType"] = d->DeliveryType;
+
+			r["BaseCost"] = d->BaseCost;
+			r["OptionsCost"] = d->OptionsCost;
+			r["InsuranceCost"] = d->InsuranceCost;
+			r["TotalCost"] = d->TotalCost;
+
+			r["Status"] = "Создан";
+			r["CreatedAt"] = DateTime::Now;
+			r["UpdatedAt"] = DateTime::Now;
+
+			_orders->Rows->Add(r);
+
+			// Автоматически добавим отправителя и получателя в Clients
+			UpsertClient(senderName, senderPhone);
+			UpsertClient(recipientName, recipientPhone);
+
+			Save();
+			return Convert::ToInt32(r["Id"]);
+		}
+
+		// Алиасы для совместимости со старыми вызовами (если где-то остались)
+		static int AddOrderEx(
+			OrderDraft^ d,
+			String^ senderName, String^ senderPhone, String^ senderType,
+			String^ recipientName, String^ recipientPhone, String^ recipientType,
+			String^ senderInn, String^ senderOrgName, String^ senderOpf, String^ senderKpp,
+			String^ senderPassSeries, String^ senderPassNumber, DateTime senderPassDate,
+			String^ recipientInn, String^ recipientOrgName, String^ recipientOpf, String^ recipientKpp,
+			String^ recipientPassSeries, String^ recipientPassNumber, DateTime recipientPassDate)
+		{
+			return AddOrder(d,
+				senderName, senderPhone, senderType,
+				recipientName, recipientPhone, recipientType,
+				senderInn, senderOrgName, senderOpf, senderKpp,
+				senderPassSeries, senderPassNumber, senderPassDate,
+				recipientInn, recipientOrgName, recipientOpf, recipientKpp,
+				recipientPassSeries, recipientPassNumber, recipientPassDate);
+		}
+
+		static int AddOrderEx(
+			OrderDraft^ d,
+			String^ senderName, String^ senderPhone, String^ senderType,
+			String^ recipientName, String^ recipientPhone, String^ recipientType)
+		{
+			return AddOrder(d, senderName, senderPhone, senderType, recipientName, recipientPhone, recipientType);
+		}
+
 		static int AddOrder(
 			OrderDraft^ d,
 			String^ senderName, String^ senderPhone, String^ senderType,
@@ -408,7 +574,8 @@ namespace LogisticsApp {
 
 			_orders->Rows->Add(r);
 
-			// Автоматически добавим получателя в Clients
+			// Автоматически добавим отправителя и получателя в Clients
+			UpsertClient(senderName, senderPhone);
 			UpsertClient(recipientName, recipientPhone);
 
 			Save();

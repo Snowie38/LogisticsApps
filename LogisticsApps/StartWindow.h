@@ -1,6 +1,7 @@
-#pragma once
+п»ї#pragma once
 #include "ClientWindow.h"
 #include "AdminWindow.h"
+#include "UITheme.h"
 
 
 
@@ -14,7 +15,7 @@ namespace LogisticsApp {
 	using namespace System::Drawing;
 
 	/// <summary>
-	/// Сводка для StartWindow
+	/// ?????? ??? StartWindow
 	/// </summary>
 	public ref class StartWindow : public System::Windows::Forms::Form
 	{
@@ -22,14 +23,17 @@ namespace LogisticsApp {
 		StartWindow(void)
 		{
 			InitializeComponent();
-			//
-			//TODO: добавьте код конструктора
-			//
+			// РџСЂРёРІРѕРґРёРј РѕРєРЅРѕ Рє РµРґРёРЅРѕРјСѓ СЃС‚РёР»СЋ (РєР°Рє РІ AdminWindow).
+			UITheme::Apply(this);
+			UITheme::StyleCard(panel1);
+			UITheme::StyleLabel(label1, true);
+			UITheme::StyleLabel(label2, false);
+
 		}
 
 	protected:
 		/// <summary>
-		/// Освободить все используемые ресурсы.
+		/// ?????????? ??? ???????????? ???????.
 		/// </summary>
 		~StartWindow()
 		{
@@ -49,14 +53,14 @@ namespace LogisticsApp {
 
 	private:
 		/// <summary>
-		/// Обязательная переменная конструктора.
+		/// ???????????? ?????????? ????????????.
 		/// </summary>
 		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
-		/// Требуемый метод для поддержки конструктора — не изменяйте 
-		/// содержимое этого метода с помощью редактора кода.
+		/// ????????? ????? ??? ????????? ???????????? ? ?? ????????? 
+		/// ?????????? ????? ?????? ? ??????? ????????? ????.
 		/// </summary>
 		void InitializeComponent(void)
 		{
@@ -88,7 +92,7 @@ namespace LogisticsApp {
 			this->btn_Admin_Start->Name = L"btn_Admin_Start";
 			this->btn_Admin_Start->Size = System::Drawing::Size(392, 186);
 			this->btn_Admin_Start->TabIndex = 3;
-			this->btn_Admin_Start->Text = L"Администрирование";
+			this->btn_Admin_Start->Text = L"РђРґРјРёРЅРёСЃС‚СЂРёСЂРѕРІР°РЅРёРµ";
 			this->btn_Admin_Start->UseVisualStyleBackColor = true;
 			this->btn_Admin_Start->Click += gcnew System::EventHandler(this, &StartWindow::btn_Admin_Click);
 			// 
@@ -103,7 +107,7 @@ namespace LogisticsApp {
 			this->btn_Client_Start->Name = L"btn_Client_Start";
 			this->btn_Client_Start->Size = System::Drawing::Size(393, 185);
 			this->btn_Client_Start->TabIndex = 2;
-			this->btn_Client_Start->Text = L"Заказать групоперевозку";
+			this->btn_Client_Start->Text = L"Р—Р°РєР°Р·Р°С‚СЊ РїРµСЂРµРІРѕР·РєСѓ";
 			this->btn_Client_Start->UseVisualStyleBackColor = true;
 			this->btn_Client_Start->Click += gcnew System::EventHandler(this, &StartWindow::btn_Client_Click);
 			// 
@@ -114,9 +118,9 @@ namespace LogisticsApp {
 				static_cast<System::Byte>(204)));
 			this->label2->Location = System::Drawing::Point(190, 124);
 			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(195, 20);
+			this->label2->Size = System::Drawing::Size(328, 25);
 			this->label2->TabIndex = 1;
-			this->label2->Text = L"Выберите пункт меню";
+			this->label2->Text = L"Р’С‹Р±РµСЂРёС‚Рµ РЅСѓР¶РЅС‹Р№ РїСѓРЅРєС‚ РјРµРЅСЋ";
 			this->label2->Click += gcnew System::EventHandler(this, &StartWindow::label2_Click);
 			// 
 			// label1
@@ -129,9 +133,9 @@ namespace LogisticsApp {
 				static_cast<System::Byte>(0)));
 			this->label1->Location = System::Drawing::Point(44, 14);
 			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(473, 42);
+			this->label1->Size = System::Drawing::Size(591, 53);
 			this->label1->TabIndex = 1;
-			this->label1->Text = L"Автомобильные перевозки";
+			this->label1->Text = L"РђРІС‚РѕРјРѕР±РёР»СЊРЅС‹Рµ РїРµСЂРµРІРѕР·РєРё";
 			this->label1->Click += gcnew System::EventHandler(this, &StartWindow::label1_Click);
 			// 
 			// StartWindow
@@ -142,7 +146,7 @@ namespace LogisticsApp {
 			this->ClientSize = System::Drawing::Size(1500, 820);
 			this->Controls->Add(this->panel1);
 			this->Name = L"StartWindow";
-			this->Text = L"Автомобильные перевозки";
+			this->Text = L"РђРІС‚РѕРјРѕР±РёР»СЊРЅС‹Рµ РїРµСЂРµРІРѕР·РєРё";
 			this->Load += gcnew System::EventHandler(this, &StartWindow::StartWindow_Load);
 			this->panel1->ResumeLayout(false);
 			this->panel1->PerformLayout();

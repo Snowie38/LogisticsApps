@@ -2,6 +2,7 @@
 #include "DistanceTable.h"
 #include <msclr/marshal_cppstd.h>
 #include "LoginWindow.h"
+#include "UITheme.h"
 
 namespace LogisticsApp {
 
@@ -13,54 +14,17 @@ namespace LogisticsApp {
 	using namespace System::Drawing;
 	using namespace System::Globalization;
 
-	/// <summary>
-	/// Сводка для ClientWindow
-	/// </summary>
 	public ref class ClientWindow : public System::Windows::Forms::Form
 	{
 	public:
 		ClientWindow(void)
 		{
 			InitializeComponent();
-
-			// значения по умолчанию (чтобы SelectedIndex не был -1)
-			if (cb_type_cargo->Items->Count > 0)
-				cb_type_cargo->SelectedIndex = 0;
-
-			// Ввод параметров груза
-			tb_weight->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			tb_volume->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			tb_length->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			tb_nCost->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-
-			// Города (чтобы при смене города тоже пересчитывалось)
-			tb_whereFrom->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			tb_where->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-
-			// Тип груза
-			cb_type_cargo->SelectedIndexChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-
-			// Доп опции
-			checkBox1->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			checkBox2->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			checkBox3->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			checkBox4->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			checkBox5->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-
-			// Адресные услуги
-			chb_from_adress->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			chb_where_adress->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-
-			// Тип доставки
-			rbStandard->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			rbExpress->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+			UITheme::Apply(this);
 		}
 
 
 	protected:
-		/// <summary>
-		/// Освободить все используемые ресурсы.
-		/// </summary>
 		~ClientWindow()
 		{
 			if (components)
@@ -127,28 +91,18 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::RadioButton^ rbStandard;
 	private: System::Windows::Forms::Label^ lblInsuranceCost;
 	private: System::Windows::Forms::Label^ lblOptionsCost;
-
-
 	private: System::Windows::Forms::Label^ lblWeightCost;
 	private: System::Windows::Forms::Label^ lblDistanceCost;
 	private: System::Windows::Forms::Label^ lb_COST;
 	private: System::Windows::Forms::Button^ btn_on_login_win;
-
 	protected:
 	protected:
 	protected:
 	protected:
 	private:
-		/// <summary>
-		/// Обязательная переменная конструктора.
-		/// </summary>
 		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
-		/// <summary>
-		/// Требуемый метод для поддержки конструктора — не изменяйте 
-		/// содержимое этого метода с помощью редактора кода.
-		/// </summary>
 		void InitializeComponent(void)
 		{
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
@@ -977,7 +931,6 @@ namespace LogisticsApp {
 #pragma endregion
 		// ================== ЛОГИКА РАСЧЁТА ==================
 	private:
-
 		double ParseDouble(TextBox^ tb)
 		{
 			if (tb == nullptr || String::IsNullOrWhiteSpace(tb->Text))
@@ -1047,23 +1000,19 @@ namespace LogisticsApp {
 
 		void Recalculate()
 		{
-			// ---------- 1. Парсим числа ----------
 			double weight = ParseDouble(tb_weight);
 			double volume = ParseDouble(tb_volume);
 			double length = ParseDouble(tb_length);
 
-			// ---------- 2. Получаем города ----------
 			std::wstring fromCity =
 				msclr::interop::marshal_as<std::wstring>(tb_whereFrom->Text);
 
 			std::wstring toCity =
 				msclr::interop::marshal_as<std::wstring>(tb_where->Text);
 
-			// ---------- 3. Получаем расстояние ----------
 			int distanceKm = ::GetDistanceKm(fromCity, toCity);
 
-			// ---------- 4. Считаем базовую стоимость ----------
-			double distanceCost = distanceKm * 12.0; // 12 ₽ / км
+			double distanceCost = distanceKm * 12.0; 
 			double weightCost = weight * 15.0;
 			double volumeCost = volume * 120.0;
 			double lengthCost = length * 50.0;
@@ -1074,17 +1023,14 @@ namespace LogisticsApp {
 				volumeCost +
 				lengthCost;
 
-			// ---------- 5. Множители ----------
-			baseCost *= GetCargoMultiplier();   // характер груза
-			baseCost *= GetDeliveryMultiplier(); // обычная / экспресс
+			baseCost *= GetCargoMultiplier();   
+			baseCost *= GetDeliveryMultiplier(); 
 
-			// ---------- 6. Дополнения ----------
 			double optionsCost = GetOptionsCost();
 			double insuranceCost = GetInsuranceCost();
 
 			double total = baseCost + optionsCost + insuranceCost;
 
-			// ---------- 7. Вывод на ПРАВУЮ панель ----------
 			lblDistanceCost->Text =
 				L"Расстояние: " + distanceKm + L" км";
 
@@ -1100,7 +1046,6 @@ namespace LogisticsApp {
 			lb_COST->Text =
 				L"ИТОГО: " + total.ToString("F0") + L" ₽";
 		}
-
 
 		// ================== КОНЕЦ ЛОГИКИ ==================
 	private: System::Void AnyValueChanged(System::Object^ sender, System::EventArgs^ e)

@@ -81,6 +81,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies />
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>main</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -108,6 +110,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies />
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>main</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -119,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AdminWindow.cpp" />
+    <ClCompile Include="AppStorage.cpp" />
     <ClCompile Include="ClientWindow.cpp" />
     <ClCompile Include="DistanceTable.cpp" />
     <ClCompile Include="LoginWindow.cpp" />
@@ -126,6 +131,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdminWindow.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="AppStorage.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="ClientWindow.h">
@@ -143,6 +151,12 @@
     <ClInclude Include="UITheme.h" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ClientWindow.resx">
+      <DependentUpon>ClientWindow.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoginWindow.resx">
+      <DependentUpon>LoginWindow.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="StartWindow.resx">
       <DependentUpon>StartWindow.h</DependentUpon>
     </EmbeddedResource>

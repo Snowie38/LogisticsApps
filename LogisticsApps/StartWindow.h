@@ -2,6 +2,7 @@
 
 #include "ClientWindow.h"
 #include "AdminWindow.h"
+#include "AppStorage.h"
 #include "UITheme.h"
 
 namespace LogisticsApp {
@@ -99,9 +100,9 @@ namespace LogisticsApp {
 			this->label2->AutoSize = true;
 			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->label2->Location = System::Drawing::Point(190, 124);
+			this->label2->Location = System::Drawing::Point(171, 274);
 			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(328, 25);
+			this->label2->Size = System::Drawing::Size(262, 20);
 			this->label2->TabIndex = 1;
 			this->label2->Text = L"Выберите нужный пункт меню";
 			this->label2->Click += gcnew System::EventHandler(this, &StartWindow::label2_Click);
@@ -114,9 +115,9 @@ namespace LogisticsApp {
 			this->label1->AutoSize = true;
 			this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft JhengHei", 19.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->label1->Location = System::Drawing::Point(44, 14);
+			this->label1->Location = System::Drawing::Point(91, 164);
 			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(591, 53);
+			this->label1->Size = System::Drawing::Size(473, 42);
 			this->label1->TabIndex = 1;
 			this->label1->Text = L"Автомобильные перевозки";
 			this->label1->Click += gcnew System::EventHandler(this, &StartWindow::label1_Click);
@@ -137,6 +138,60 @@ namespace LogisticsApp {
 
 		}
 #pragma endregion
+
+	private: bool PromptAdminPassword()
+	{
+		String^ correct = AppStorage::GetAdminPassword();
+
+		Form^ dlg = gcnew Form();
+		dlg->Text = "Пароль администратора";
+		dlg->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;// fully qualified
+		dlg->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;// fully qualified
+		dlg->MinimizeBox = false;
+		dlg->MaximizeBox = false;
+		dlg->ClientSize = System::Drawing::Size(360, 160);
+
+		Label^ lbl = gcnew Label();
+		lbl->Text = "Введите пароль администратора:";
+		lbl->AutoSize = false;
+		lbl->Width = 330;
+		lbl->Height = 24;
+		lbl->Location = System::Drawing::Point(15, 20);
+
+		TextBox^ tb = gcnew TextBox();
+		tb->Width = 330;
+		tb->Location = System::Drawing::Point(15, 55);
+		tb->UseSystemPasswordChar = true;
+
+		Button^ btnOk = gcnew Button();
+		btnOk->Text = "OK";
+		btnOk->Width = 90;
+		btnOk->Location = System::Drawing::Point(165, 100);
+		btnOk->DialogResult = System::Windows::Forms::DialogResult::OK;
+
+		Button^ btnCancel = gcnew Button();
+		btnCancel->Text = "Отмена";
+		btnCancel->Width = 90;
+		btnCancel->Location = System::Drawing::Point(255, 100);
+		btnCancel->DialogResult = System::Windows::Forms::DialogResult::Cancel;
+
+		dlg->Controls->Add(lbl);
+		dlg->Controls->Add(tb);
+		dlg->Controls->Add(btnOk);
+		dlg->Controls->Add(btnCancel);
+		dlg->AcceptButton = btnOk;
+		dlg->CancelButton = btnCancel;
+
+		System::Windows::Forms::DialogResult res = dlg->ShowDialog(this);
+		if (res != System::Windows::Forms::DialogResult::OK) return false;
+
+		String^ entered = tb->Text;
+		if (String::Equals(entered, correct)) return true;
+
+		MessageBox::Show("Неверный пароль.", "Администрирование",
+			MessageBoxButtons::OK, MessageBoxIcon::Warning);
+		return false;
+	}
 	private: System::Void StartWindow_Load(System::Object^ sender, System::EventArgs^ e) {
 	}
 	private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -148,6 +203,7 @@ namespace LogisticsApp {
 		this->Show();
 	}
 	private: System::Void btn_Admin_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (!PromptAdminPassword()) return;
 		this->Hide();
 		AdminWindow^ admin = gcnew AdminWindow();
 		admin->ShowDialog();

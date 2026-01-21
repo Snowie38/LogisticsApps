@@ -154,6 +154,9 @@
     <EmbeddedResource Include="ClientWindow.resx">
       <DependentUpon>ClientWindow.h</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="LoginWindow.resx">
+      <DependentUpon>LoginWindow.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="StartWindow.resx">
       <DependentUpon>StartWindow.h</DependentUpon>
     </EmbeddedResource>

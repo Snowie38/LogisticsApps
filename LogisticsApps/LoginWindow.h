@@ -201,6 +201,15 @@ namespace LogisticsApp {
 
 	private: System::Windows::Forms::Label^ label62;
 	private: System::Windows::Forms::Button^ btnApproveForms;
+private: System::Windows::Forms::TextBox^ tb_mail_IP;
+
+private: System::Windows::Forms::Label^ label64;
+private: System::Windows::Forms::TextBox^ tb_mail_LEG;
+
+private: System::Windows::Forms::Label^ label63;
+private: System::Windows::Forms::TextBox^ tb_mail_Pes;
+
+private: System::Windows::Forms::Label^ label65;
 
 
 	protected:
@@ -219,6 +228,7 @@ namespace LogisticsApp {
 		void InitializeComponent(void)
 		{
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
+			this->btnApproveForms = (gcnew System::Windows::Forms::Button());
 			this->pnRecipientIP = (gcnew System::Windows::Forms::Panel());
 			this->label44 = (gcnew System::Windows::Forms::Label());
 			this->textBox35 = (gcnew System::Windows::Forms::TextBox());
@@ -239,7 +249,6 @@ namespace LogisticsApp {
 			this->textBox41 = (gcnew System::Windows::Forms::TextBox());
 			this->label53 = (gcnew System::Windows::Forms::Label());
 			this->textBox42 = (gcnew System::Windows::Forms::TextBox());
-			this->pnRecipientPerson = (gcnew System::Windows::Forms::Panel());
 			this->pnRecipientLegal = (gcnew System::Windows::Forms::Panel());
 			this->textBox25 = (gcnew System::Windows::Forms::TextBox());
 			this->label33 = (gcnew System::Windows::Forms::Label());
@@ -264,21 +273,6 @@ namespace LogisticsApp {
 			this->label43 = (gcnew System::Windows::Forms::Label());
 			this->textBox34 = (gcnew System::Windows::Forms::TextBox());
 			this->label32 = (gcnew System::Windows::Forms::Label());
-			this->label54 = (gcnew System::Windows::Forms::Label());
-			this->dateTimePicker6 = (gcnew System::Windows::Forms::DateTimePicker());
-			this->label55 = (gcnew System::Windows::Forms::Label());
-			this->label56 = (gcnew System::Windows::Forms::Label());
-			this->textBox43 = (gcnew System::Windows::Forms::TextBox());
-			this->label57 = (gcnew System::Windows::Forms::Label());
-			this->textBox44 = (gcnew System::Windows::Forms::TextBox());
-			this->label58 = (gcnew System::Windows::Forms::Label());
-			this->textBox45 = (gcnew System::Windows::Forms::TextBox());
-			this->label59 = (gcnew System::Windows::Forms::Label());
-			this->textBox46 = (gcnew System::Windows::Forms::TextBox());
-			this->label60 = (gcnew System::Windows::Forms::Label());
-			this->textBox47 = (gcnew System::Windows::Forms::TextBox());
-			this->label61 = (gcnew System::Windows::Forms::Label());
-			this->textBox48 = (gcnew System::Windows::Forms::TextBox());
 			this->panel5 = (gcnew System::Windows::Forms::Panel());
 			this->btnRecipientLegacy = (gcnew System::Windows::Forms::RadioButton());
 			this->btnRecipientIP = (gcnew System::Windows::Forms::RadioButton());
@@ -349,28 +343,49 @@ namespace LogisticsApp {
 			this->btnSenderIP = (gcnew System::Windows::Forms::RadioButton());
 			this->btnSenderPerson = (gcnew System::Windows::Forms::RadioButton());
 			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->btnApproveForms = (gcnew System::Windows::Forms::Button());
+			this->pnRecipientPerson = (gcnew System::Windows::Forms::Panel());
+			this->label54 = (gcnew System::Windows::Forms::Label());
+			this->dateTimePicker6 = (gcnew System::Windows::Forms::DateTimePicker());
+			this->label55 = (gcnew System::Windows::Forms::Label());
+			this->label56 = (gcnew System::Windows::Forms::Label());
+			this->textBox43 = (gcnew System::Windows::Forms::TextBox());
+			this->label57 = (gcnew System::Windows::Forms::Label());
+			this->textBox44 = (gcnew System::Windows::Forms::TextBox());
+			this->label58 = (gcnew System::Windows::Forms::Label());
+			this->textBox45 = (gcnew System::Windows::Forms::TextBox());
+			this->label59 = (gcnew System::Windows::Forms::Label());
+			this->textBox46 = (gcnew System::Windows::Forms::TextBox());
+			this->label60 = (gcnew System::Windows::Forms::Label());
+			this->textBox47 = (gcnew System::Windows::Forms::TextBox());
+			this->label61 = (gcnew System::Windows::Forms::Label());
+			this->textBox48 = (gcnew System::Windows::Forms::TextBox());
+			this->label63 = (gcnew System::Windows::Forms::Label());
+			this->tb_mail_LEG = (gcnew System::Windows::Forms::TextBox());
+			this->tb_mail_IP = (gcnew System::Windows::Forms::TextBox());
+			this->label64 = (gcnew System::Windows::Forms::Label());
+			this->tb_mail_Pes = (gcnew System::Windows::Forms::TextBox());
+			this->label65 = (gcnew System::Windows::Forms::Label());
 			this->panel1->SuspendLayout();
 			this->pnRecipientIP->SuspendLayout();
-			this->pnRecipientPerson->SuspendLayout();
 			this->pnRecipientLegal->SuspendLayout();
 			this->panel5->SuspendLayout();
 			this->pnSenderLegal->SuspendLayout();
 			this->pnSenderIP->SuspendLayout();
 			this->pnSenderPerson->SuspendLayout();
 			this->pnSenderTabs->SuspendLayout();
+			this->pnRecipientPerson->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// panel1
 			// 
 			this->panel1->BackColor = System::Drawing::Color::WhiteSmoke;
+			this->panel1->Controls->Add(this->pnSenderIP);
+			this->panel1->Controls->Add(this->pnSenderLegal);
 			this->panel1->Controls->Add(this->btnApproveForms);
 			this->panel1->Controls->Add(this->pnRecipientIP);
-			this->panel1->Controls->Add(this->pnRecipientLegal);
 			this->panel1->Controls->Add(this->panel5);
+			this->panel1->Controls->Add(this->pnRecipientLegal);
 			this->panel1->Controls->Add(this->label62);
-			this->panel1->Controls->Add(this->pnSenderLegal);
-			this->panel1->Controls->Add(this->pnSenderIP);
 			this->panel1->Controls->Add(this->pnSenderPerson);
 			this->panel1->Controls->Add(this->pnSenderTabs);
 			this->panel1->Controls->Add(this->label1);
@@ -379,6 +394,18 @@ namespace LogisticsApp {
 			this->panel1->Name = L"panel1";
 			this->panel1->Size = System::Drawing::Size(872, 1240);
 			this->panel1->TabIndex = 0;
+			// 
+			// btnApproveForms
+			// 
+			this->btnApproveForms->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->btnApproveForms->Location = System::Drawing::Point(201, 1096);
+			this->btnApproveForms->Name = L"btnApproveForms";
+			this->btnApproveForms->Size = System::Drawing::Size(502, 120);
+			this->btnApproveForms->TabIndex = 1007;
+			this->btnApproveForms->Text = L"Оформить заявку";
+			this->btnApproveForms->UseVisualStyleBackColor = true;
+			this->btnApproveForms->Click += gcnew System::EventHandler(this, &LoginWindow::btnApproveForms_Click);
 			// 
 			// pnRecipientIP
 			// 
@@ -588,29 +615,6 @@ namespace LogisticsApp {
 			this->textBox42->Name = L"textBox42";
 			this->textBox42->Size = System::Drawing::Size(210, 22);
 			this->textBox42->TabIndex = 2;
-			// 
-			// pnRecipientPerson
-			// 
-			this->pnRecipientPerson->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
-			this->pnRecipientPerson->Controls->Add(this->label54);
-			this->pnRecipientPerson->Controls->Add(this->dateTimePicker6);
-			this->pnRecipientPerson->Controls->Add(this->label55);
-			this->pnRecipientPerson->Controls->Add(this->label56);
-			this->pnRecipientPerson->Controls->Add(this->textBox43);
-			this->pnRecipientPerson->Controls->Add(this->label57);
-			this->pnRecipientPerson->Controls->Add(this->textBox44);
-			this->pnRecipientPerson->Controls->Add(this->label58);
-			this->pnRecipientPerson->Controls->Add(this->textBox45);
-			this->pnRecipientPerson->Controls->Add(this->label59);
-			this->pnRecipientPerson->Controls->Add(this->textBox46);
-			this->pnRecipientPerson->Controls->Add(this->label60);
-			this->pnRecipientPerson->Controls->Add(this->textBox47);
-			this->pnRecipientPerson->Controls->Add(this->label61);
-			this->pnRecipientPerson->Controls->Add(this->textBox48);
-			this->pnRecipientPerson->Location = System::Drawing::Point(18, 708);
-			this->pnRecipientPerson->Name = L"pnRecipientPerson";
-			this->pnRecipientPerson->Size = System::Drawing::Size(844, 236);
-			this->pnRecipientPerson->TabIndex = 1003;
 			// 
 			// pnRecipientLegal
 			// 
@@ -863,156 +867,13 @@ namespace LogisticsApp {
 			this->label32->TabIndex = 1004;
 			this->label32->Text = L"КПП";
 			// 
-			// label54
-			// 
-			this->label54->AutoSize = true;
-			this->label54->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->label54->Location = System::Drawing::Point(388, 170);
-			this->label54->Name = L"label54";
-			this->label54->Size = System::Drawing::Size(121, 20);
-			this->label54->TabIndex = 16;
-			this->label54->Text = L"Дата выдачи";
-			// 
-			// dateTimePicker6
-			// 
-			this->dateTimePicker6->Location = System::Drawing::Point(385, 193);
-			this->dateTimePicker6->Name = L"dateTimePicker6";
-			this->dateTimePicker6->Size = System::Drawing::Size(146, 22);
-			this->dateTimePicker6->TabIndex = 15;
-			// 
-			// label55
-			// 
-			this->label55->AutoSize = true;
-			this->label55->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->label55->Location = System::Drawing::Point(9, 147);
-			this->label55->Name = L"label55";
-			this->label55->Size = System::Drawing::Size(86, 20);
-			this->label55->TabIndex = 14;
-			this->label55->Text = L"Паспорт:";
-			// 
-			// label56
-			// 
-			this->label56->AutoSize = true;
-			this->label56->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->label56->Location = System::Drawing::Point(183, 172);
-			this->label56->Name = L"label56";
-			this->label56->Size = System::Drawing::Size(64, 20);
-			this->label56->TabIndex = 13;
-			this->label56->Text = L"Номер";
-			// 
-			// textBox43
-			// 
-			this->textBox43->Location = System::Drawing::Point(187, 195);
-			this->textBox43->MaxLength = 4;
-			this->textBox43->Name = L"textBox43";
-			this->textBox43->Size = System::Drawing::Size(139, 22);
-			this->textBox43->TabIndex = 12;
-			// 
-			// label57
-			// 
-			this->label57->AutoSize = true;
-			this->label57->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->label57->Location = System::Drawing::Point(9, 172);
-			this->label57->Name = L"label57";
-			this->label57->Size = System::Drawing::Size(61, 20);
-			this->label57->TabIndex = 11;
-			this->label57->Text = L"Серия";
-			// 
-			// textBox44
-			// 
-			this->textBox44->Location = System::Drawing::Point(13, 195);
-			this->textBox44->MaxLength = 4;
-			this->textBox44->Name = L"textBox44";
-			this->textBox44->Size = System::Drawing::Size(139, 22);
-			this->textBox44->TabIndex = 10;
-			// 
-			// label58
-			// 
-			this->label58->AutoSize = true;
-			this->label58->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->label58->Location = System::Drawing::Point(388, 68);
-			this->label58->Name = L"label58";
-			this->label58->Size = System::Drawing::Size(91, 20);
-			this->label58->TabIndex = 9;
-			this->label58->Text = L"Отчество";
-			// 
-			// textBox45
-			// 
-			this->textBox45->Location = System::Drawing::Point(392, 91);
-			this->textBox45->MaxLength = 100;
-			this->textBox45->Name = L"textBox45";
-			this->textBox45->Size = System::Drawing::Size(139, 22);
-			this->textBox45->TabIndex = 8;
-			// 
-			// label59
-			// 
-			this->label59->AutoSize = true;
-			this->label59->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->label59->Location = System::Drawing::Point(213, 68);
-			this->label59->Name = L"label59";
-			this->label59->Size = System::Drawing::Size(42, 20);
-			this->label59->TabIndex = 7;
-			this->label59->Text = L"Имя";
-			// 
-			// textBox46
-			// 
-			this->textBox46->Location = System::Drawing::Point(217, 91);
-			this->textBox46->MaxLength = 100;
-			this->textBox46->Name = L"textBox46";
-			this->textBox46->Size = System::Drawing::Size(139, 22);
-			this->textBox46->TabIndex = 6;
-			// 
-			// label60
-			// 
-			this->label60->AutoSize = true;
-			this->label60->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->label60->Location = System::Drawing::Point(9, 68);
-			this->label60->Name = L"label60";
-			this->label60->Size = System::Drawing::Size(87, 20);
-			this->label60->TabIndex = 5;
-			this->label60->Text = L"Фамилия";
-			// 
-			// textBox47
-			// 
-			this->textBox47->Location = System::Drawing::Point(13, 91);
-			this->textBox47->MaxLength = 100;
-			this->textBox47->Name = L"textBox47";
-			this->textBox47->Size = System::Drawing::Size(139, 22);
-			this->textBox47->TabIndex = 4;
-			// 
-			// label61
-			// 
-			this->label61->AutoSize = true;
-			this->label61->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->label61->Location = System::Drawing::Point(9, 19);
-			this->label61->Name = L"label61";
-			this->label61->Size = System::Drawing::Size(90, 20);
-			this->label61->TabIndex = 3;
-			this->label61->Text = L"Телефон:";
-			// 
-			// textBox48
-			// 
-			this->textBox48->Location = System::Drawing::Point(118, 19);
-			this->textBox48->MaxLength = 12;
-			this->textBox48->Name = L"textBox48";
-			this->textBox48->Size = System::Drawing::Size(210, 22);
-			this->textBox48->TabIndex = 2;
-			// 
 			// panel5
 			// 
 			this->panel5->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
 			this->panel5->Controls->Add(this->btnRecipientLegacy);
 			this->panel5->Controls->Add(this->btnRecipientIP);
 			this->panel5->Controls->Add(this->btnRecipientPerson);
-			this->panel5->Location = System::Drawing::Point(18, 576);
+			this->panel5->Location = System::Drawing::Point(18, 566);
 			this->panel5->Name = L"panel5";
 			this->panel5->Size = System::Drawing::Size(844, 100);
 			this->panel5->TabIndex = 1004;
@@ -1076,6 +937,8 @@ namespace LogisticsApp {
 			// pnSenderLegal
 			// 
 			this->pnSenderLegal->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			this->pnSenderLegal->Controls->Add(this->tb_mail_LEG);
+			this->pnSenderLegal->Controls->Add(this->label63);
 			this->pnSenderLegal->Controls->Add(this->label31);
 			this->pnSenderLegal->Controls->Add(this->textBox24);
 			this->pnSenderLegal->Controls->Add(this->label30);
@@ -1099,7 +962,7 @@ namespace LogisticsApp {
 			this->pnSenderLegal->Controls->Add(this->textBox21);
 			this->pnSenderLegal->Controls->Add(this->label29);
 			this->pnSenderLegal->Controls->Add(this->textBox22);
-			this->pnSenderLegal->Location = System::Drawing::Point(18, 188);
+			this->pnSenderLegal->Location = System::Drawing::Point(18, 184);
 			this->pnSenderLegal->Name = L"pnSenderLegal";
 			this->pnSenderLegal->Size = System::Drawing::Size(844, 338);
 			this->pnSenderLegal->TabIndex = 1001;
@@ -1327,8 +1190,10 @@ namespace LogisticsApp {
 			// pnSenderIP
 			// 
 			this->pnSenderIP->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			this->pnSenderIP->Controls->Add(this->tb_mail_IP);
 			this->pnSenderIP->Controls->Add(this->label19);
 			this->pnSenderIP->Controls->Add(this->textBox14);
+			this->pnSenderIP->Controls->Add(this->label64);
 			this->pnSenderIP->Controls->Add(this->label18);
 			this->pnSenderIP->Controls->Add(this->textBox13);
 			this->pnSenderIP->Controls->Add(this->label10);
@@ -1537,6 +1402,8 @@ namespace LogisticsApp {
 			// pnSenderPerson
 			// 
 			this->pnSenderPerson->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			this->pnSenderPerson->Controls->Add(this->tb_mail_Pes);
+			this->pnSenderPerson->Controls->Add(this->label65);
 			this->pnSenderPerson->Controls->Add(this->label9);
 			this->pnSenderPerson->Controls->Add(this->dateTimePicker1);
 			this->pnSenderPerson->Controls->Add(this->label8);
@@ -1767,17 +1634,228 @@ namespace LogisticsApp {
 			this->label1->TabIndex = 0;
 			this->label1->Text = L"Отправитель:";
 			// 
-			// btnApproveForms
+			// pnRecipientPerson
 			// 
-			this->btnApproveForms->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->pnRecipientPerson->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			this->pnRecipientPerson->Controls->Add(this->label54);
+			this->pnRecipientPerson->Controls->Add(this->dateTimePicker6);
+			this->pnRecipientPerson->Controls->Add(this->label55);
+			this->pnRecipientPerson->Controls->Add(this->label56);
+			this->pnRecipientPerson->Controls->Add(this->textBox43);
+			this->pnRecipientPerson->Controls->Add(this->label57);
+			this->pnRecipientPerson->Controls->Add(this->textBox44);
+			this->pnRecipientPerson->Controls->Add(this->label58);
+			this->pnRecipientPerson->Controls->Add(this->textBox45);
+			this->pnRecipientPerson->Controls->Add(this->label59);
+			this->pnRecipientPerson->Controls->Add(this->textBox46);
+			this->pnRecipientPerson->Controls->Add(this->label60);
+			this->pnRecipientPerson->Controls->Add(this->textBox47);
+			this->pnRecipientPerson->Controls->Add(this->label61);
+			this->pnRecipientPerson->Controls->Add(this->textBox48);
+			this->pnRecipientPerson->Location = System::Drawing::Point(18, 708);
+			this->pnRecipientPerson->Name = L"pnRecipientPerson";
+			this->pnRecipientPerson->Size = System::Drawing::Size(844, 236);
+			this->pnRecipientPerson->TabIndex = 1003;
+			// 
+			// label54
+			// 
+			this->label54->AutoSize = true;
+			this->label54->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->btnApproveForms->Location = System::Drawing::Point(201, 1096);
-			this->btnApproveForms->Name = L"btnApproveForms";
-			this->btnApproveForms->Size = System::Drawing::Size(502, 120);
-			this->btnApproveForms->TabIndex = 1007;
-			this->btnApproveForms->Text = L"Оформить заявку";
-			this->btnApproveForms->UseVisualStyleBackColor = true;
-			this->btnApproveForms->Click += gcnew System::EventHandler(this, &LoginWindow::btnApproveForms_Click);
+			this->label54->Location = System::Drawing::Point(388, 170);
+			this->label54->Name = L"label54";
+			this->label54->Size = System::Drawing::Size(121, 20);
+			this->label54->TabIndex = 16;
+			this->label54->Text = L"Дата выдачи";
+			// 
+			// dateTimePicker6
+			// 
+			this->dateTimePicker6->Location = System::Drawing::Point(385, 193);
+			this->dateTimePicker6->Name = L"dateTimePicker6";
+			this->dateTimePicker6->Size = System::Drawing::Size(146, 22);
+			this->dateTimePicker6->TabIndex = 15;
+			// 
+			// label55
+			// 
+			this->label55->AutoSize = true;
+			this->label55->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label55->Location = System::Drawing::Point(9, 147);
+			this->label55->Name = L"label55";
+			this->label55->Size = System::Drawing::Size(86, 20);
+			this->label55->TabIndex = 14;
+			this->label55->Text = L"Паспорт:";
+			// 
+			// label56
+			// 
+			this->label56->AutoSize = true;
+			this->label56->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label56->Location = System::Drawing::Point(183, 172);
+			this->label56->Name = L"label56";
+			this->label56->Size = System::Drawing::Size(64, 20);
+			this->label56->TabIndex = 13;
+			this->label56->Text = L"Номер";
+			// 
+			// textBox43
+			// 
+			this->textBox43->Location = System::Drawing::Point(187, 195);
+			this->textBox43->MaxLength = 4;
+			this->textBox43->Name = L"textBox43";
+			this->textBox43->Size = System::Drawing::Size(139, 22);
+			this->textBox43->TabIndex = 12;
+			// 
+			// label57
+			// 
+			this->label57->AutoSize = true;
+			this->label57->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label57->Location = System::Drawing::Point(9, 172);
+			this->label57->Name = L"label57";
+			this->label57->Size = System::Drawing::Size(61, 20);
+			this->label57->TabIndex = 11;
+			this->label57->Text = L"Серия";
+			// 
+			// textBox44
+			// 
+			this->textBox44->Location = System::Drawing::Point(13, 195);
+			this->textBox44->MaxLength = 4;
+			this->textBox44->Name = L"textBox44";
+			this->textBox44->Size = System::Drawing::Size(139, 22);
+			this->textBox44->TabIndex = 10;
+			// 
+			// label58
+			// 
+			this->label58->AutoSize = true;
+			this->label58->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label58->Location = System::Drawing::Point(388, 68);
+			this->label58->Name = L"label58";
+			this->label58->Size = System::Drawing::Size(91, 20);
+			this->label58->TabIndex = 9;
+			this->label58->Text = L"Отчество";
+			// 
+			// textBox45
+			// 
+			this->textBox45->Location = System::Drawing::Point(392, 91);
+			this->textBox45->MaxLength = 100;
+			this->textBox45->Name = L"textBox45";
+			this->textBox45->Size = System::Drawing::Size(139, 22);
+			this->textBox45->TabIndex = 8;
+			// 
+			// label59
+			// 
+			this->label59->AutoSize = true;
+			this->label59->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label59->Location = System::Drawing::Point(213, 68);
+			this->label59->Name = L"label59";
+			this->label59->Size = System::Drawing::Size(42, 20);
+			this->label59->TabIndex = 7;
+			this->label59->Text = L"Имя";
+			// 
+			// textBox46
+			// 
+			this->textBox46->Location = System::Drawing::Point(217, 91);
+			this->textBox46->MaxLength = 100;
+			this->textBox46->Name = L"textBox46";
+			this->textBox46->Size = System::Drawing::Size(139, 22);
+			this->textBox46->TabIndex = 6;
+			// 
+			// label60
+			// 
+			this->label60->AutoSize = true;
+			this->label60->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label60->Location = System::Drawing::Point(9, 68);
+			this->label60->Name = L"label60";
+			this->label60->Size = System::Drawing::Size(87, 20);
+			this->label60->TabIndex = 5;
+			this->label60->Text = L"Фамилия";
+			// 
+			// textBox47
+			// 
+			this->textBox47->Location = System::Drawing::Point(13, 91);
+			this->textBox47->MaxLength = 100;
+			this->textBox47->Name = L"textBox47";
+			this->textBox47->Size = System::Drawing::Size(139, 22);
+			this->textBox47->TabIndex = 4;
+			// 
+			// label61
+			// 
+			this->label61->AutoSize = true;
+			this->label61->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label61->Location = System::Drawing::Point(9, 19);
+			this->label61->Name = L"label61";
+			this->label61->Size = System::Drawing::Size(90, 20);
+			this->label61->TabIndex = 3;
+			this->label61->Text = L"Телефон:";
+			// 
+			// textBox48
+			// 
+			this->textBox48->Location = System::Drawing::Point(118, 19);
+			this->textBox48->MaxLength = 12;
+			this->textBox48->Name = L"textBox48";
+			this->textBox48->Size = System::Drawing::Size(210, 22);
+			this->textBox48->TabIndex = 2;
+			// 
+			// label63
+			// 
+			this->label63->AutoSize = true;
+			this->label63->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label63->Location = System::Drawing::Point(643, 21);
+			this->label63->Name = L"label63";
+			this->label63->Size = System::Drawing::Size(118, 25);
+			this->label63->TabIndex = 1005;
+			this->label63->Text = L"Эл. Почта";
+			// 
+			// tb_mail_LEG
+			// 
+			this->tb_mail_LEG->Location = System::Drawing::Point(647, 43);
+			this->tb_mail_LEG->MaxLength = 100;
+			this->tb_mail_LEG->Name = L"tb_mail_LEG";
+			this->tb_mail_LEG->Size = System::Drawing::Size(139, 22);
+			this->tb_mail_LEG->TabIndex = 1006;
+			// 
+			// tb_mail_IP
+			// 
+			this->tb_mail_IP->Location = System::Drawing::Point(394, 115);
+			this->tb_mail_IP->MaxLength = 100;
+			this->tb_mail_IP->Name = L"tb_mail_IP";
+			this->tb_mail_IP->Size = System::Drawing::Size(139, 22);
+			this->tb_mail_IP->TabIndex = 1008;
+			// 
+			// label64
+			// 
+			this->label64->AutoSize = true;
+			this->label64->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label64->Location = System::Drawing::Point(390, 93);
+			this->label64->Name = L"label64";
+			this->label64->Size = System::Drawing::Size(94, 20);
+			this->label64->TabIndex = 1007;
+			this->label64->Text = L"Эл. Почта";
+			// 
+			// tb_mail_Pes
+			// 
+			this->tb_mail_Pes->Location = System::Drawing::Point(558, 90);
+			this->tb_mail_Pes->MaxLength = 100;
+			this->tb_mail_Pes->Name = L"tb_mail_Pes";
+			this->tb_mail_Pes->Size = System::Drawing::Size(139, 22);
+			this->tb_mail_Pes->TabIndex = 1010;
+			// 
+			// label65
+			// 
+			this->label65->AutoSize = true;
+			this->label65->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label65->Location = System::Drawing::Point(554, 68);
+			this->label65->Name = L"label65";
+			this->label65->Size = System::Drawing::Size(94, 20);
+			this->label65->TabIndex = 1009;
+			this->label65->Text = L"Эл. Почта";
 			// 
 			// LoginWindow
 			// 
@@ -1785,7 +1863,7 @@ namespace LogisticsApp {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->AutoScroll = true;
 			this->BackColor = System::Drawing::Color::LightGray;
-			this->ClientSize = System::Drawing::Size(1605, 820);
+			this->ClientSize = System::Drawing::Size(1605, 834);
 			this->Controls->Add(this->panel1);
 			this->Name = L"LoginWindow";
 			this->Text = L"Заказать перевозку";
@@ -1794,8 +1872,6 @@ namespace LogisticsApp {
 			this->panel1->PerformLayout();
 			this->pnRecipientIP->ResumeLayout(false);
 			this->pnRecipientIP->PerformLayout();
-			this->pnRecipientPerson->ResumeLayout(false);
-			this->pnRecipientPerson->PerformLayout();
 			this->pnRecipientLegal->ResumeLayout(false);
 			this->pnRecipientLegal->PerformLayout();
 			this->panel5->ResumeLayout(false);
@@ -1806,6 +1882,8 @@ namespace LogisticsApp {
 			this->pnSenderPerson->ResumeLayout(false);
 			this->pnSenderPerson->PerformLayout();
 			this->pnSenderTabs->ResumeLayout(false);
+			this->pnRecipientPerson->ResumeLayout(false);
+			this->pnRecipientPerson->PerformLayout();
 			this->ResumeLayout(false);
 
 		}

@@ -86,6 +86,53 @@ namespace LogisticsApp {
 		}
 
 
+		// Миграция старых названий колонок (например, если в старом logistics_storage.xml были другие имена)
+		static bool IsNullOrEmptyValue(Object^ v)
+		{
+			if (v == nullptr || v == DBNull::Value) return true;
+
+			String^ s = dynamic_cast<String^>(v);
+			if (s != nullptr) return String::IsNullOrWhiteSpace(s);
+
+			if (v->GetType() == DateTime::typeid)
+			{
+				DateTime dt = safe_cast<DateTime>(v);
+				return dt == DateTime::MinValue;
+			}
+
+			return false;
+		}
+
+		static void MigrateColumnName(DataTable^ t, String^ oldName, String^ newName)
+		{
+			if (t == nullptr) return;
+			if (!t->Columns->Contains(oldName)) return;
+
+			// Если новой колонки ещё нет — просто переименуем
+			if (!t->Columns->Contains(newName))
+			{
+				t->Columns[oldName]->ColumnName = newName;
+				return;
+			}
+
+			// Если обе колонки есть — переносим данные и удаляем старую
+			for each(DataRow ^ r in t->Rows)
+			{
+				Object^ oldv = r[oldName];
+				Object^ newv = r[newName];
+
+				bool newEmpty = IsNullOrEmptyValue(newv);
+				bool oldHas = !IsNullOrEmptyValue(oldv);
+
+				if (newEmpty && oldHas)
+					r[newName] = oldv;
+			}
+
+			t->Columns->Remove(oldName);
+		}
+
+
+
 		static DataTable^ BuildOrders()
 		{
 			DataTable^ t = gcnew DataTable("Orders");
@@ -105,23 +152,6 @@ namespace LogisticsApp {
 			t->Columns->Add("RecipientName", String::typeid);
 			t->Columns->Add("RecipientPhone", String::typeid);
 			t->Columns->Add("RecipientType", String::typeid);
-
-			// Доп. данные отправителя/получателя (ИНН/организация/паспорт) — из LoginWindow
-			t->Columns->Add("SenderInn", String::typeid);
-			t->Columns->Add("SenderOrgName", String::typeid);
-			t->Columns->Add("SenderOpf", String::typeid);
-			t->Columns->Add("SenderKpp", String::typeid);
-			t->Columns->Add("SenderPassSeries", String::typeid);
-			t->Columns->Add("SenderPassNumber", String::typeid);
-			t->Columns->Add("SenderPassDate", DateTime::typeid);
-
-			t->Columns->Add("RecipientInn", String::typeid);
-			t->Columns->Add("RecipientOrgName", String::typeid);
-			t->Columns->Add("RecipientOpf", String::typeid);
-			t->Columns->Add("RecipientKpp", String::typeid);
-			t->Columns->Add("RecipientPassSeries", String::typeid);
-			t->Columns->Add("RecipientPassNumber", String::typeid);
-			t->Columns->Add("RecipientPassDate", DateTime::typeid);
 
 			// Маршрут / груз (из ClientWindow)
 			t->Columns->Add("CityFrom", String::typeid);
@@ -163,10 +193,6 @@ namespace LogisticsApp {
 			t->Columns["Status"]->DefaultValue = "Создан";
 			t->Columns["CreatedAt"]->DefaultValue = DateTime::Now;
 			t->Columns["UpdatedAt"]->DefaultValue = DateTime::Now;
-
-			// Паспортные даты по умолчанию
-			if (t->Columns->Contains("SenderPassDate")) t->Columns["SenderPassDate"]->DefaultValue = DateTime::MinValue;
-			if (t->Columns->Contains("RecipientPassDate")) t->Columns["RecipientPassDate"]->DefaultValue = DateTime::MinValue;
 
 			return t;
 		}
@@ -248,8 +274,16 @@ namespace LogisticsApp {
 
 		static void EnsureSchemasAfterLoad()
 		{
+			// Миграция старых названий паспортных полей (в некоторых версиях они назывались *Passport*)
+			MigrateColumnName(_orders, "SenderPassportSeries", "SenderPassSeries");
+			MigrateColumnName(_orders, "SenderPassportNumber", "SenderPassNumber");
+			MigrateColumnName(_orders, "SenderPassportDate", "SenderPassDate");
+			MigrateColumnName(_orders, "RecipientPassportSeries", "RecipientPassSeries");
+			MigrateColumnName(_orders, "RecipientPassportNumber", "RecipientPassNumber");
+			MigrateColumnName(_orders, "RecipientPassportDate", "RecipientPassDate");
+
 			// На случай если файл XML старый и в нём нет новых колонок
-			// Orders
+						// Orders
 			EnsureColumn(_orders, "SenderName", String::typeid, "");
 			EnsureColumn(_orders, "SenderPhone", String::typeid, "");
 			EnsureColumn(_orders, "SenderType", String::typeid, "");
@@ -331,7 +365,7 @@ namespace LogisticsApp {
 		{
 			if (String::IsNullOrWhiteSpace(phone)) return;
 
-			for each (DataRow ^ c in _clients->Rows)
+			for each(DataRow ^ c in _clients->Rows)
 			{
 				if (c->RowState == DataRowState::Deleted) continue;
 				String^ p = c["Phone"] != nullptr ? Convert::ToString(c["Phone"]) : "";
@@ -487,8 +521,7 @@ namespace LogisticsApp {
 
 			_orders->Rows->Add(r);
 
-			// Автоматически добавим отправителя и получателя в Clients
-			UpsertClient(senderName, senderPhone);
+			// Автоматически добавим получателя в Clients
 			UpsertClient(recipientName, recipientPhone);
 
 			Save();
@@ -574,8 +607,7 @@ namespace LogisticsApp {
 
 			_orders->Rows->Add(r);
 
-			// Автоматически добавим отправителя и получателя в Clients
-			UpsertClient(senderName, senderPhone);
+			// Автоматически добавим получателя в Clients
 			UpsertClient(recipientName, recipientPhone);
 
 			Save();

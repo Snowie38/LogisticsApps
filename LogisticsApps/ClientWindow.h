@@ -421,7 +421,6 @@ namespace LogisticsApp {
 			this->tb_from_adress->Name = L"tb_from_adress";
 			this->tb_from_adress->Size = System::Drawing::Size(212, 98);
 			this->tb_from_adress->TabIndex = 1;
-			this->tb_from_adress->Text = L"Россия, Москва, проспект Андропова, 34, 43";
 			this->tb_from_adress->Visible = false;
 			this->tb_from_adress->TextChanged += gcnew System::EventHandler(this, &ClientWindow::tb_from_adress_TextChanged);
 			// 
@@ -481,7 +480,6 @@ namespace LogisticsApp {
 			this->tb_where_adress->Name = L"tb_where_adress";
 			this->tb_where_adress->Size = System::Drawing::Size(236, 98);
 			this->tb_where_adress->TabIndex = 13;
-			this->tb_where_adress->Text = L"Россия, Тула, Революции, 17, 55";
 			this->tb_where_adress->Visible = false;
 			// 
 			// chb_from_adress
@@ -1205,13 +1203,13 @@ namespace LogisticsApp {
 	private: System::Void label7_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
 	private: System::Void chb_from_adress_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-		if (tb_from_adress) tb_from_adress->Visible = chb_from_adress->Checked;
+		if (tb_from_adress) tb_where_adress->Visible = chb_from_adress->Checked;
 		Recalculate();
 	}
 	private: System::Void label17_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
 	private: System::Void chb_where_adress_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-		if (tb_where_adress) tb_where_adress->Visible = chb_where_adress->Checked;
+		if (tb_where_adress) tb_from_adress->Visible = chb_where_adress->Checked;
 		Recalculate();
 	}
 	private: System::Void tb_from_adress_TextChanged(System::Object^ sender, System::EventArgs^ e) {

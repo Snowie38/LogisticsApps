@@ -99,9 +99,9 @@ namespace LogisticsApp {
 			this->label2->AutoSize = true;
 			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->label2->Location = System::Drawing::Point(190, 124);
+			this->label2->Location = System::Drawing::Point(171, 274);
 			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(328, 25);
+			this->label2->Size = System::Drawing::Size(262, 20);
 			this->label2->TabIndex = 1;
 			this->label2->Text = L"Выберите нужный пункт меню";
 			this->label2->Click += gcnew System::EventHandler(this, &StartWindow::label2_Click);
@@ -114,9 +114,9 @@ namespace LogisticsApp {
 			this->label1->AutoSize = true;
 			this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft JhengHei", 19.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->label1->Location = System::Drawing::Point(44, 14);
+			this->label1->Location = System::Drawing::Point(91, 164);
 			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(591, 53);
+			this->label1->Size = System::Drawing::Size(473, 42);
 			this->label1->TabIndex = 1;
 			this->label1->Text = L"Автомобильные перевозки";
 			this->label1->Click += gcnew System::EventHandler(this, &StartWindow::label1_Click);

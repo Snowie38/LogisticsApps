@@ -68,6 +68,9 @@ namespace LogisticsApp {
         // Settings
         Dictionary<String^, NumericUpDown^>^ settingEditors;
         Button^ btnSaveSettings;
+        TextBox^ tbAdminPassNew;
+        TextBox^ tbAdminPassConfirm;
+        Button^ btnChangeAdminPass;
 
 #pragma region Windows Form Designer generated code
         void InitializeComponent(void)
@@ -527,6 +530,7 @@ namespace LogisticsApp {
             TrySetHeader("SenderType", "Тип отправителя");
             TrySetHeader("SenderName", "ФИО отправителя");
             TrySetHeader("SenderPhone", "Телефон отправителя");
+            TrySetHeader("SenderEmail", "Email отправителя");
             TrySetHeader("SenderInn", "ИНН отправителя");
             TrySetHeader("SenderOrgName", "Орг. название отправителя");
             TrySetHeader("SenderOpf", "ОПФ отправителя");
@@ -538,6 +542,7 @@ namespace LogisticsApp {
             TrySetHeader("RecipientType", "Тип получателя");
             TrySetHeader("RecipientName", "ФИО получателя");
             TrySetHeader("RecipientPhone", "Телефон получателя");
+            TrySetHeader("RecipientEmail", "Email получателя");
             TrySetHeader("RecipientInn", "ИНН получателя");
             TrySetHeader("RecipientOrgName", "Орг. название получателя");
             TrySetHeader("RecipientOpf", "ОПФ получателя");
@@ -634,7 +639,7 @@ namespace LogisticsApp {
             lay->Controls->Add(header, 0, 0);
 
             Label^ t = gcnew Label();
-            t->Text = "Клиенты (по отправителю)";
+            t->Text = "Клиенты";
             t->Font = F_Title();
             t->ForeColor = C_TextDark();
             t->AutoSize = true;
@@ -646,74 +651,42 @@ namespace LogisticsApp {
             dgvClients->AutoGenerateColumns = true;
             lay->Controls->Add(dgvClients, 0, 1);
 
-            // Витрина клиентов
-            dtClientsView = gcnew DataTable("ClientsView");
-            dtClientsView->Columns->Add("LastName", String::typeid);
-            dtClientsView->Columns->Add("FirstName", String::typeid);
-            dtClientsView->Columns->Add("MiddleName", String::typeid);
-            dtClientsView->Columns->Add("Passport", String::typeid); // серия номер
-            dtClientsView->Columns->Add("SenderPhone", String::typeid);
-
-            dgvClients->DataSource = dtClientsView;
+            dgvClients->DataSource = AppStorage::Clients();
             dgvClients->AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode::Fill;
+
+            ConfigureClientsGrid();
         }
 
-        void RefreshClientsFromOrders()
+        void ConfigureClientsGrid()
         {
-            if (dtClientsView == nullptr) return;
+            if (dgvClients == nullptr) return;
 
-            dtClientsView->Rows->Clear();
+            // Заголовки
+            if (dgvClients->Columns->Contains("Id")) dgvClients->Columns["Id"]->HeaderText = "ID";
+            if (dgvClients->Columns->Contains("Name")) dgvClients->Columns["Name"]->HeaderText = "ФИО";
+            if (dgvClients->Columns->Contains("Phone")) dgvClients->Columns["Phone"]->HeaderText = "Телефон";
+            if (dgvClients->Columns->Contains("Email")) dgvClients->Columns["Email"]->HeaderText = "Email";
+            if (dgvClients->Columns->Contains("ClientType")) dgvClients->Columns["ClientType"]->HeaderText = "Тип";
+            if (dgvClients->Columns->Contains("Inn")) dgvClients->Columns["Inn"]->HeaderText = "ИНН";
+            if (dgvClients->Columns->Contains("OrgName")) dgvClients->Columns["OrgName"]->HeaderText = "Организация";
+            if (dgvClients->Columns->Contains("Opf")) dgvClients->Columns["Opf"]->HeaderText = "ОПФ";
+            if (dgvClients->Columns->Contains("Kpp")) dgvClients->Columns["Kpp"]->HeaderText = "КПП";
+            if (dgvClients->Columns->Contains("PassSeries")) dgvClients->Columns["PassSeries"]->HeaderText = "Паспорт серия";
+            if (dgvClients->Columns->Contains("PassNumber")) dgvClients->Columns["PassNumber"]->HeaderText = "Паспорт номер";
+            if (dgvClients->Columns->Contains("PassDate")) dgvClients->Columns["PassDate"]->HeaderText = "Паспорт дата";
 
-            DataTable^ orders = AppStorage::Orders();
-            Dictionary<String^, bool>^ seen = gcnew Dictionary<String^, bool>();
-
-            for each (DataRow ^ r in orders->Rows)
-            {
-                if (r->RowState == DataRowState::Deleted) continue;
-
-                String^ phone = (r->Table->Columns->Contains("SenderPhone") && r["SenderPhone"] != nullptr)
-                    ? Convert::ToString(r["SenderPhone"])
-                    : "";
-
-                if (String::IsNullOrWhiteSpace(phone)) continue;
-                if (seen->ContainsKey(phone)) continue;
-                seen[phone] = true;
-
-                String^ last = "";
-                String^ first = "";
-                String^ mid = "";
-
-                // Если у тебя ФИО хранится одной строкой SenderName — аккуратно разложим по частям.
-                if (r->Table->Columns->Contains("SenderLastName")) last = Convert::ToString(r["SenderLastName"]);
-                if (r->Table->Columns->Contains("SenderFirstName")) first = Convert::ToString(r["SenderFirstName"]);
-                if (r->Table->Columns->Contains("SenderMiddleName")) mid = Convert::ToString(r["SenderMiddleName"]);
-
-                if (String::IsNullOrWhiteSpace(last) && r->Table->Columns->Contains("SenderName"))
-                {
-                    String^ fio = Convert::ToString(r["SenderName"]);
-                    array<String^>^ parts = fio->Split(gcnew array<wchar_t>{' '}, StringSplitOptions::RemoveEmptyEntries);
-                    if (parts->Length > 0) last = parts[0];
-                    if (parts->Length > 1) first = parts[1];
-                    if (parts->Length > 2) mid = parts[2];
-                }
-
-                String^ ps = (r->Table->Columns->Contains("SenderPassportSeries") && r["SenderPassportSeries"] != nullptr)
-                    ? Convert::ToString(r["SenderPassportSeries"])
-                    : "";
-                String^ pn = (r->Table->Columns->Contains("SenderPassportNumber") && r["SenderPassportNumber"] != nullptr)
-                    ? Convert::ToString(r["SenderPassportNumber"])
-                    : "";
-                String^ passport = (ps + " " + pn)->Trim();
-
-                DataRow^ nr = dtClientsView->NewRow();
-                nr["LastName"] = last;
-                nr["FirstName"] = first;
-                nr["MiddleName"] = mid;
-                nr["Passport"] = passport;
-                nr["SenderPhone"] = phone;
-                dtClientsView->Rows->Add(nr);
-            }
+            if (dgvClients->Columns->Contains("PassDate"))
+                dgvClients->Columns["PassDate"]->DefaultCellStyle->Format = "dd.MM.yyyy";
         }
+
+        void RefreshClients()
+        {
+            if (dgvClients == nullptr) return;
+            dgvClients->DataSource = nullptr;
+            dgvClients->DataSource = AppStorage::Clients();
+            ConfigureClientsGrid();
+        }
+
 
         void AddSettingRow(Panel^ wrap, String^ key, String^ title, double min, double max, double step, int decimals, int% y)
         {
@@ -797,6 +770,62 @@ namespace LogisticsApp {
             StylePrimaryButton(btnSaveSettings);
             btnSaveSettings->Click += gcnew EventHandler(this, &AdminWindow::OnSaveSettings);
             wrap->Controls->Add(btnSaveSettings);
+
+            // --- Пароль администратора ---
+            y += 70;
+
+            Label^ tPass = gcnew Label();
+            tPass->Text = "Пароль администратора";
+            tPass->Font = F_Title();
+            tPass->ForeColor = C_TextDark();
+            tPass->AutoSize = true;
+            tPass->Location = Point(0, y);
+            wrap->Controls->Add(tPass);
+            y += 54;
+
+            Label^ lNew = gcnew Label();
+            lNew->Text = "Новый пароль";
+            lNew->Font = F_Body();
+            lNew->ForeColor = C_TextDark();
+            lNew->AutoSize = false;
+            lNew->Width = 520;
+            lNew->Height = 28;
+            lNew->Location = Point(0, y + 6);
+            wrap->Controls->Add(lNew);
+
+            tbAdminPassNew = gcnew TextBox();
+            tbAdminPassNew->Font = F_Body();
+            tbAdminPassNew->Width = 220;
+            tbAdminPassNew->Location = Point(540, y);
+            tbAdminPassNew->UseSystemPasswordChar = true;
+            wrap->Controls->Add(tbAdminPassNew);
+            y += 46;
+
+            Label^ lConf = gcnew Label();
+            lConf->Text = "Повторите пароль";
+            lConf->Font = F_Body();
+            lConf->ForeColor = C_TextDark();
+            lConf->AutoSize = false;
+            lConf->Width = 520;
+            lConf->Height = 28;
+            lConf->Location = Point(0, y + 6);
+            wrap->Controls->Add(lConf);
+
+            tbAdminPassConfirm = gcnew TextBox();
+            tbAdminPassConfirm->Font = F_Body();
+            tbAdminPassConfirm->Width = 220;
+            tbAdminPassConfirm->Location = Point(540, y);
+            tbAdminPassConfirm->UseSystemPasswordChar = true;
+            wrap->Controls->Add(tbAdminPassConfirm);
+            y += 52;
+
+            btnChangeAdminPass = gcnew Button();
+            btnChangeAdminPass->Text = "Изменить пароль";
+            btnChangeAdminPass->Width = 260;
+            btnChangeAdminPass->Location = Point(0, y);
+            StylePrimaryButton(btnChangeAdminPass);
+            btnChangeAdminPass->Click += gcnew EventHandler(this, &AdminWindow::OnChangeAdminPassword);
+            wrap->Controls->Add(btnChangeAdminPass);
         }
 
         // ===== Navigation =====
@@ -831,7 +860,7 @@ namespace LogisticsApp {
             lblTitle->Text = key;
 
             if (key == "Главная") RefreshDashboard();
-            if (key == "Клиенты") RefreshClientsFromOrders();
+            if (key == "Клиенты") RefreshClients();
             if (key == "Заказы") ConfigureOrdersGrid();
         }
 
@@ -942,6 +971,34 @@ namespace LogisticsApp {
             ConfigureOrdersGrid();
         }
 
+
+        System::Void OnChangeAdminPassword(System::Object^, System::EventArgs^)
+        {
+            String^ p1 = tbAdminPassNew != nullptr ? tbAdminPassNew->Text : "";
+            String^ p2 = tbAdminPassConfirm != nullptr ? tbAdminPassConfirm->Text : "";
+
+            if (String::IsNullOrWhiteSpace(p1))
+            {
+                MessageBox::Show("Введите новый пароль.", "Администрирование",
+                    MessageBoxButtons::OK, MessageBoxIcon::Information);
+                return;
+            }
+            if (!String::Equals(p1, p2))
+            {
+                MessageBox::Show("Пароли не совпадают.", "Администрирование",
+                    MessageBoxButtons::OK, MessageBoxIcon::Warning);
+                return;
+            }
+
+            AppStorage::SetAdminPassword(p1);
+
+            if (tbAdminPassNew) tbAdminPassNew->Text = "";
+            if (tbAdminPassConfirm) tbAdminPassConfirm->Text = "";
+
+            MessageBox::Show("Пароль администратора изменен.", "Администрирование",
+                MessageBoxButtons::OK, MessageBoxIcon::Information);
+        }
+
         System::Void OnSaveSettings(System::Object^, System::EventArgs^)
         {
             for each (KeyValuePair<String^, NumericUpDown^> kv in settingEditors)
@@ -956,4 +1013,4 @@ namespace LogisticsApp {
         }
     };
 
-} 
+}

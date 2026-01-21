@@ -2,6 +2,7 @@
 
 #include "ClientWindow.h"
 #include "AdminWindow.h"
+#include "AppStorage.h"
 #include "UITheme.h"
 
 namespace LogisticsApp {
@@ -137,6 +138,60 @@ namespace LogisticsApp {
 
 		}
 #pragma endregion
+
+	private: bool PromptAdminPassword()
+	{
+		String^ correct = AppStorage::GetAdminPassword();
+
+		Form^ dlg = gcnew Form();
+		dlg->Text = "Пароль администратора";
+		dlg->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;// fully qualified
+		dlg->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;// fully qualified
+		dlg->MinimizeBox = false;
+		dlg->MaximizeBox = false;
+		dlg->ClientSize = System::Drawing::Size(360, 160);
+
+		Label^ lbl = gcnew Label();
+		lbl->Text = "Введите пароль администратора:";
+		lbl->AutoSize = false;
+		lbl->Width = 330;
+		lbl->Height = 24;
+		lbl->Location = System::Drawing::Point(15, 20);
+
+		TextBox^ tb = gcnew TextBox();
+		tb->Width = 330;
+		tb->Location = System::Drawing::Point(15, 55);
+		tb->UseSystemPasswordChar = true;
+
+		Button^ btnOk = gcnew Button();
+		btnOk->Text = "OK";
+		btnOk->Width = 90;
+		btnOk->Location = System::Drawing::Point(165, 100);
+		btnOk->DialogResult = System::Windows::Forms::DialogResult::OK;
+
+		Button^ btnCancel = gcnew Button();
+		btnCancel->Text = "Отмена";
+		btnCancel->Width = 90;
+		btnCancel->Location = System::Drawing::Point(255, 100);
+		btnCancel->DialogResult = System::Windows::Forms::DialogResult::Cancel;
+
+		dlg->Controls->Add(lbl);
+		dlg->Controls->Add(tb);
+		dlg->Controls->Add(btnOk);
+		dlg->Controls->Add(btnCancel);
+		dlg->AcceptButton = btnOk;
+		dlg->CancelButton = btnCancel;
+
+		System::Windows::Forms::DialogResult res = dlg->ShowDialog(this);
+		if (res != System::Windows::Forms::DialogResult::OK) return false;
+
+		String^ entered = tb->Text;
+		if (String::Equals(entered, correct)) return true;
+
+		MessageBox::Show("Неверный пароль.", "Администрирование",
+			MessageBoxButtons::OK, MessageBoxIcon::Warning);
+		return false;
+	}
 	private: System::Void StartWindow_Load(System::Object^ sender, System::EventArgs^ e) {
 	}
 	private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -148,6 +203,7 @@ namespace LogisticsApp {
 		this->Show();
 	}
 	private: System::Void btn_Admin_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (!PromptAdminPassword()) return;
 		this->Hide();
 		AdminWindow^ admin = gcnew AdminWindow();
 		admin->ShowDialog();

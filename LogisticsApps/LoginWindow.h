@@ -201,15 +201,15 @@ namespace LogisticsApp {
 
 	private: System::Windows::Forms::Label^ label62;
 	private: System::Windows::Forms::Button^ btnApproveForms;
-private: System::Windows::Forms::TextBox^ tb_mail_IP;
+	private: System::Windows::Forms::TextBox^ tb_mail_IP;
 
-private: System::Windows::Forms::Label^ label64;
-private: System::Windows::Forms::TextBox^ tb_mail_LEG;
+	private: System::Windows::Forms::Label^ label64;
+	private: System::Windows::Forms::TextBox^ tb_mail_LEG;
 
-private: System::Windows::Forms::Label^ label63;
-private: System::Windows::Forms::TextBox^ tb_mail_Pes;
+	private: System::Windows::Forms::Label^ label63;
+	private: System::Windows::Forms::TextBox^ tb_mail_Pes;
 
-private: System::Windows::Forms::Label^ label65;
+	private: System::Windows::Forms::Label^ label65;
 
 
 	protected:
@@ -1990,6 +1990,7 @@ private: System::Windows::Forms::Label^ label65;
 		String^ senderName = "";
 		String^ senderPhone = "";
 
+		String^ senderEmail = "";
 		String^ senderInn = "";
 		String^ senderOrgName = "";
 		String^ senderOpf = "";
@@ -2004,6 +2005,7 @@ private: System::Windows::Forms::Label^ label65;
 			senderPhone = textBox1->Text;
 			senderName = CombineFio(textBox2->Text, textBox3->Text, textBox4->Text);
 
+			senderEmail = tb_mail_Pes->Text;
 			senderPassSeries = textBox5->Text;
 			senderPassNumber = textBox6->Text;
 			senderPassDate = dateTimePicker1->Value;
@@ -2016,6 +2018,8 @@ private: System::Windows::Forms::Label^ label65;
 
 			senderInn = textBox13->Text;
 			senderOrgName = textBox14->Text;
+
+			senderEmail = tb_mail_IP->Text;
 
 			senderPassSeries = textBox8->Text;
 			senderPassNumber = textBox7->Text;
@@ -2032,6 +2036,8 @@ private: System::Windows::Forms::Label^ label65;
 			senderOpf = textBox23->Text;
 			senderKpp = textBox24->Text;
 
+			senderEmail = tb_mail_LEG->Text;
+
 			senderPassSeries = textBox18->Text;
 			senderPassNumber = textBox17->Text;
 			senderPassDate = dateTimePicker3->Value;
@@ -2042,6 +2048,7 @@ private: System::Windows::Forms::Label^ label65;
 		String^ recipientName = "";
 		String^ recipientPhone = "";
 
+		String^ recipientEmail = "";
 		String^ recipientInn = "";
 		String^ recipientOrgName = "";
 		String^ recipientOpf = "";
@@ -2100,8 +2107,8 @@ private: System::Windows::Forms::Label^ label65;
 
 		int orderId = AppStorage::AddOrder(
 			_draft,
-			senderName, senderPhone, senderTypeStr,
-			recipientName, recipientPhone, recipientTypeStr,
+			senderName, senderPhone, senderEmail, senderTypeStr,
+			recipientName, recipientPhone, recipientEmail, recipientTypeStr,
 			senderInn, senderOrgName, senderOpf, senderKpp,
 			senderPassSeries, senderPassNumber, senderPassDate,
 			recipientInn, recipientOrgName, recipientOpf, recipientKpp,

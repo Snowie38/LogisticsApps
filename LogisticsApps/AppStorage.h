@@ -58,8 +58,10 @@ namespace LogisticsApp {
 		static DataTable^ _settings = nullptr;
 		static String^ _path = nullptr;
 
+		// --- helpers ---
 		static void EnsureColumn(DataTable^ t, String^ name, Type^ type, Object^ defaultValue)
 		{
+			if (t == nullptr) return;
 			if (!t->Columns->Contains(name))
 			{
 				DataColumn^ c = gcnew DataColumn(name, type);
@@ -67,7 +69,7 @@ namespace LogisticsApp {
 				t->Columns->Add(c);
 			}
 		}
-		// Перегрузки, чтобы избежать предупреждения C4965 (неявная упаковка литералов 0/false)
+		// перегрузки, чтобы избежать C4965 (неявная упаковка 0/false)
 		static void EnsureColumn(DataTable^ t, String^ name, Type^ type, int defaultValue)
 		{
 			EnsureColumn(t, name, type, safe_cast<Object^>(defaultValue));
@@ -85,8 +87,6 @@ namespace LogisticsApp {
 			EnsureColumn(t, name, type, safe_cast<Object^>(defaultValue));
 		}
 
-
-		// Миграция старых названий колонок (например, если в старом logistics_storage.xml были другие имена)
 		static bool IsNullOrEmptyValue(Object^ v)
 		{
 			if (v == nullptr || v == DBNull::Value) return true;
@@ -103,20 +103,19 @@ namespace LogisticsApp {
 			return false;
 		}
 
+		// миграция имён колонок (если в старом XML были другие названия)
 		static void MigrateColumnName(DataTable^ t, String^ oldName, String^ newName)
 		{
 			if (t == nullptr) return;
 			if (!t->Columns->Contains(oldName)) return;
 
-			// Если новой колонки ещё нет — просто переименуем
 			if (!t->Columns->Contains(newName))
 			{
 				t->Columns[oldName]->ColumnName = newName;
 				return;
 			}
 
-			// Если обе колонки есть — переносим данные и удаляем старую
-			for each(DataRow ^ r in t->Rows)
+			for each (DataRow ^ r in t->Rows)
 			{
 				Object^ oldv = r[oldName];
 				Object^ newv = r[newName];
@@ -131,8 +130,7 @@ namespace LogisticsApp {
 			t->Columns->Remove(oldName);
 		}
 
-
-
+		// --- schema builders ---
 		static DataTable^ BuildOrders()
 		{
 			DataTable^ t = gcnew DataTable("Orders");
@@ -144,16 +142,35 @@ namespace LogisticsApp {
 			t->Columns->Add(id);
 			t->PrimaryKey = gcnew array<DataColumn^>{ id };
 
-			// Отправитель / получатель (из LoginWindow)
+			// отправитель / получатель (из LoginWindow)
 			t->Columns->Add("SenderName", String::typeid);
 			t->Columns->Add("SenderPhone", String::typeid);
+			t->Columns->Add("SenderEmail", String::typeid);
 			t->Columns->Add("SenderType", String::typeid);
 
 			t->Columns->Add("RecipientName", String::typeid);
 			t->Columns->Add("RecipientPhone", String::typeid);
+			t->Columns->Add("RecipientEmail", String::typeid);
 			t->Columns->Add("RecipientType", String::typeid);
 
-			// Маршрут / груз (из ClientWindow)
+			// доп. реквизиты (ИНН/организация/паспорт)
+			t->Columns->Add("SenderInn", String::typeid);
+			t->Columns->Add("SenderOrgName", String::typeid);
+			t->Columns->Add("SenderOpf", String::typeid);
+			t->Columns->Add("SenderKpp", String::typeid);
+			t->Columns->Add("SenderPassSeries", String::typeid);
+			t->Columns->Add("SenderPassNumber", String::typeid);
+			t->Columns->Add("SenderPassDate", DateTime::typeid);
+
+			t->Columns->Add("RecipientInn", String::typeid);
+			t->Columns->Add("RecipientOrgName", String::typeid);
+			t->Columns->Add("RecipientOpf", String::typeid);
+			t->Columns->Add("RecipientKpp", String::typeid);
+			t->Columns->Add("RecipientPassSeries", String::typeid);
+			t->Columns->Add("RecipientPassNumber", String::typeid);
+			t->Columns->Add("RecipientPassDate", DateTime::typeid);
+
+			// маршрут / груз (из ClientWindow)
 			t->Columns->Add("CityFrom", String::typeid);
 			t->Columns->Add("CityTo", String::typeid);
 			t->Columns->Add("DistanceKm", Int32::typeid);
@@ -165,7 +182,7 @@ namespace LogisticsApp {
 			t->Columns->Add("LengthM", Double::typeid);
 			t->Columns->Add("DeclaredValue", Double::typeid);
 
-			// Адреса / опции
+			// адреса / опции
 			t->Columns->Add("PickupFromAddress", Boolean::typeid);
 			t->Columns->Add("DeliveryToAddress", Boolean::typeid);
 			t->Columns->Add("FromAddress", String::typeid);
@@ -179,13 +196,13 @@ namespace LogisticsApp {
 
 			t->Columns->Add("DeliveryType", String::typeid);
 
-			// Стоимость
+			// стоимость
 			t->Columns->Add("BaseCost", Double::typeid);
 			t->Columns->Add("OptionsCost", Double::typeid);
 			t->Columns->Add("InsuranceCost", Double::typeid);
 			t->Columns->Add("TotalCost", Double::typeid);
 
-			// Статус / время
+			// статус / время
 			t->Columns->Add("Status", String::typeid);
 			t->Columns->Add("CreatedAt", DateTime::typeid);
 			t->Columns->Add("UpdatedAt", DateTime::typeid);
@@ -193,6 +210,9 @@ namespace LogisticsApp {
 			t->Columns["Status"]->DefaultValue = "Создан";
 			t->Columns["CreatedAt"]->DefaultValue = DateTime::Now;
 			t->Columns["UpdatedAt"]->DefaultValue = DateTime::Now;
+
+			t->Columns["SenderEmail"]->DefaultValue = "";
+			t->Columns["RecipientEmail"]->DefaultValue = "";
 
 			return t;
 		}
@@ -212,6 +232,16 @@ namespace LogisticsApp {
 			t->Columns->Add("Phone", String::typeid);
 			t->Columns->Add("Email", String::typeid);
 
+			t->Columns->Add("ClientType", String::typeid); // Физ. лицо / ИП / Юр. лицо
+			t->Columns->Add("Inn", String::typeid);
+			t->Columns->Add("OrgName", String::typeid);
+			t->Columns->Add("Opf", String::typeid);
+			t->Columns->Add("Kpp", String::typeid);
+
+			t->Columns->Add("PassSeries", String::typeid);
+			t->Columns->Add("PassNumber", String::typeid);
+			t->Columns->Add("PassDate", DateTime::typeid);
+
 			return t;
 		}
 
@@ -222,11 +252,17 @@ namespace LogisticsApp {
 			t->Columns->Add(key);
 			t->PrimaryKey = gcnew array<DataColumn^>{ key };
 
+			// числовые настройки
 			t->Columns->Add("Value", Double::typeid);
+
+			// строковые настройки (например пароль администратора)
+			t->Columns->Add("ValueStr", String::typeid);
+
 			t->Columns->Add("Note", String::typeid);
 			return t;
 		}
 
+		// --- seeding ---
 		static void SeedSetting(String^ key, double value, String^ note)
 		{
 			DataRow^ r = _settings->Rows->Find(key);
@@ -235,6 +271,20 @@ namespace LogisticsApp {
 			r = _settings->NewRow();
 			r["Key"] = key;
 			r["Value"] = value;
+			r["ValueStr"] = "";
+			r["Note"] = note;
+			_settings->Rows->Add(r);
+		}
+
+		static void SeedSettingStr(String^ key, String^ value, String^ note)
+		{
+			DataRow^ r = _settings->Rows->Find(key);
+			if (r != nullptr) return;
+
+			r = _settings->NewRow();
+			r["Key"] = key;
+			r["Value"] = 0.0;
+			r["ValueStr"] = value;
 			r["Note"] = note;
 			_settings->Rows->Add(r);
 		}
@@ -255,14 +305,14 @@ namespace LogisticsApp {
 			SeedSetting("PickupFee", 710.0, "Забор от адреса");
 			SeedSetting("DeliveryFee", 510.0, "Доставка до адреса");
 
-			// Доп. опции (по чекбоксам в ClientWindow)
+			// Доп. опции
 			SeedSetting("ProtectPackFee", 510.0, "Защитная упаковка");
 			SeedSetting("PalletFee", 600.0, "Палетирование");
 			SeedSetting("FloorDeliveryFee", 0.0, "Доставка на этаж");
 			SeedSetting("DocsFeeA", 150.0, "Документы A");
 			SeedSetting("DocsFeeB", 100.0, "Документы B");
 
-			// Коэффициенты характера груза (индексы ComboBox в ClientWindow)
+			// Коэффициенты типа груза
 			SeedSetting("CargoCoef_0", 1.00, "Обычный");
 			SeedSetting("CargoCoef_1", 1.20, "Хрупкое");
 			SeedSetting("CargoCoef_2", 0.90, "Документы");
@@ -270,11 +320,15 @@ namespace LogisticsApp {
 			SeedSetting("CargoCoef_4", 1.70, "Топливо");
 			SeedSetting("CargoCoef_5", 2.00, "Газ");
 			SeedSetting("CargoCoef_6", 3.00, "Радиоактивные");
+
+			// Пароль администратора
+			SeedSettingStr("AdminPassword", "1111", "Пароль администратора");
 		}
 
+		// --- schema upgrade ---
 		static void EnsureSchemasAfterLoad()
 		{
-			// Миграция старых названий паспортных полей (в некоторых версиях они назывались *Passport*)
+			// миграция старых названий паспортных полей (*Passport* -> *Pass*)
 			MigrateColumnName(_orders, "SenderPassportSeries", "SenderPassSeries");
 			MigrateColumnName(_orders, "SenderPassportNumber", "SenderPassNumber");
 			MigrateColumnName(_orders, "SenderPassportDate", "SenderPassDate");
@@ -282,16 +336,17 @@ namespace LogisticsApp {
 			MigrateColumnName(_orders, "RecipientPassportNumber", "RecipientPassNumber");
 			MigrateColumnName(_orders, "RecipientPassportDate", "RecipientPassDate");
 
-			// На случай если файл XML старый и в нём нет новых колонок
-						// Orders
+			// Orders
 			EnsureColumn(_orders, "SenderName", String::typeid, "");
 			EnsureColumn(_orders, "SenderPhone", String::typeid, "");
+			EnsureColumn(_orders, "SenderEmail", String::typeid, "");
 			EnsureColumn(_orders, "SenderType", String::typeid, "");
+
 			EnsureColumn(_orders, "RecipientName", String::typeid, "");
 			EnsureColumn(_orders, "RecipientPhone", String::typeid, "");
+			EnsureColumn(_orders, "RecipientEmail", String::typeid, "");
 			EnsureColumn(_orders, "RecipientType", String::typeid, "");
 
-			// Доп. данные отправителя/получателя (ИНН/организация/паспорт) — используются в форме оформления заказа
 			EnsureColumn(_orders, "SenderInn", String::typeid, "");
 			EnsureColumn(_orders, "SenderOrgName", String::typeid, "");
 			EnsureColumn(_orders, "SenderOpf", String::typeid, "");
@@ -307,7 +362,6 @@ namespace LogisticsApp {
 			EnsureColumn(_orders, "RecipientPassSeries", String::typeid, "");
 			EnsureColumn(_orders, "RecipientPassNumber", String::typeid, "");
 			EnsureColumn(_orders, "RecipientPassDate", DateTime::typeid, DateTime::MinValue);
-
 
 			EnsureColumn(_orders, "CityFrom", String::typeid, "");
 			EnsureColumn(_orders, "CityTo", String::typeid, "");
@@ -347,41 +401,115 @@ namespace LogisticsApp {
 			EnsureColumn(_clients, "Phone", String::typeid, "");
 			EnsureColumn(_clients, "Email", String::typeid, "");
 
+			EnsureColumn(_clients, "ClientType", String::typeid, "");
+			EnsureColumn(_clients, "Inn", String::typeid, "");
+			EnsureColumn(_clients, "OrgName", String::typeid, "");
+			EnsureColumn(_clients, "Opf", String::typeid, "");
+			EnsureColumn(_clients, "Kpp", String::typeid, "");
+			EnsureColumn(_clients, "PassSeries", String::typeid, "");
+			EnsureColumn(_clients, "PassNumber", String::typeid, "");
+			EnsureColumn(_clients, "PassDate", DateTime::typeid, DateTime::MinValue);
+
 			// Settings
 			EnsureColumn(_settings, "Value", Double::typeid, 0.0);
+			EnsureColumn(_settings, "ValueStr", String::typeid, "");
 			EnsureColumn(_settings, "Note", String::typeid, "");
-
-			// Удаляем старые/дублирующиеся колонки (если они есть в XML)
-			if (_orders->Columns->Contains("ClientName")) _orders->Columns->Remove("ClientName");
-			if (_orders->Columns->Contains("PhoneName"))  _orders->Columns->Remove("PhoneName");
-			if (_clients->Columns->Contains("ClientName")) _clients->Columns->Remove("ClientName");
-			if (_clients->Columns->Contains("PhoneName"))  _clients->Columns->Remove("PhoneName");
 
 			// defaults if missing
 			SeedDefaults();
 		}
 
-		static void UpsertClient(String^ name, String^ phone)
+		static void UpsertClient(
+			String^ name, String^ phone, String^ email, String^ clientType,
+			String^ inn, String^ orgName, String^ opf, String^ kpp,
+			String^ passSeries, String^ passNumber, DateTime passDate)
 		{
 			if (String::IsNullOrWhiteSpace(phone)) return;
 
-			for each(DataRow ^ c in _clients->Rows)
+			// ищем по телефону
+			for each (DataRow ^ c in _clients->Rows)
 			{
 				if (c->RowState == DataRowState::Deleted) continue;
 				String^ p = c["Phone"] != nullptr ? Convert::ToString(c["Phone"]) : "";
-				if (String::Equals(p, phone))
+				if (!String::Equals(p, phone)) continue;
+
+				// обновляем только пустые поля (или если пришло "лучшее" значение)
+				if (!String::IsNullOrWhiteSpace(name))
 				{
-					String^ n = c["Name"] != nullptr ? Convert::ToString(c["Name"]) : "";
-					if (String::IsNullOrWhiteSpace(n) && !String::IsNullOrWhiteSpace(name))
-						c["Name"] = name;
-					return;
+					String^ n0 = c["Name"] != nullptr ? Convert::ToString(c["Name"]) : "";
+					if (String::IsNullOrWhiteSpace(n0)) c["Name"] = name;
 				}
+
+				if (!String::IsNullOrWhiteSpace(email))
+				{
+					String^ e0 = c["Email"] != nullptr ? Convert::ToString(c["Email"]) : "";
+					if (String::IsNullOrWhiteSpace(e0)) c["Email"] = email;
+				}
+
+				if (!String::IsNullOrWhiteSpace(clientType))
+				{
+					String^ t0 = c["ClientType"] != nullptr ? Convert::ToString(c["ClientType"]) : "";
+					if (String::IsNullOrWhiteSpace(t0)) c["ClientType"] = clientType;
+				}
+
+				if (!String::IsNullOrWhiteSpace(inn))
+				{
+					String^ v0 = c["Inn"] != nullptr ? Convert::ToString(c["Inn"]) : "";
+					if (String::IsNullOrWhiteSpace(v0)) c["Inn"] = inn;
+				}
+				if (!String::IsNullOrWhiteSpace(orgName))
+				{
+					String^ v0 = c["OrgName"] != nullptr ? Convert::ToString(c["OrgName"]) : "";
+					if (String::IsNullOrWhiteSpace(v0)) c["OrgName"] = orgName;
+				}
+				if (!String::IsNullOrWhiteSpace(opf))
+				{
+					String^ v0 = c["Opf"] != nullptr ? Convert::ToString(c["Opf"]) : "";
+					if (String::IsNullOrWhiteSpace(v0)) c["Opf"] = opf;
+				}
+				if (!String::IsNullOrWhiteSpace(kpp))
+				{
+					String^ v0 = c["Kpp"] != nullptr ? Convert::ToString(c["Kpp"]) : "";
+					if (String::IsNullOrWhiteSpace(v0)) c["Kpp"] = kpp;
+				}
+
+				if (!String::IsNullOrWhiteSpace(passSeries))
+				{
+					String^ v0 = c["PassSeries"] != nullptr ? Convert::ToString(c["PassSeries"]) : "";
+					if (String::IsNullOrWhiteSpace(v0)) c["PassSeries"] = passSeries;
+				}
+				if (!String::IsNullOrWhiteSpace(passNumber))
+				{
+					String^ v0 = c["PassNumber"] != nullptr ? Convert::ToString(c["PassNumber"]) : "";
+					if (String::IsNullOrWhiteSpace(v0)) c["PassNumber"] = passNumber;
+				}
+				if (passDate != DateTime::MinValue)
+				{
+					DateTime d0 = DateTime::MinValue;
+					try { d0 = safe_cast<DateTime>(c["PassDate"]); }
+					catch (...) { d0 = DateTime::MinValue; }
+					if (d0 == DateTime::MinValue) c["PassDate"] = passDate;
+				}
+
+				return;
 			}
 
+			// не нашли — создаём
 			DataRow^ r = _clients->NewRow();
 			r["Name"] = name;
 			r["Phone"] = phone;
-			r["Email"] = "";
+			r["Email"] = email;
+
+			r["ClientType"] = clientType;
+			r["Inn"] = inn;
+			r["OrgName"] = orgName;
+			r["Opf"] = opf;
+			r["Kpp"] = kpp;
+
+			r["PassSeries"] = passSeries;
+			r["PassNumber"] = passNumber;
+			r["PassDate"] = passDate;
+
 			_clients->Rows->Add(r);
 		}
 
@@ -437,6 +565,7 @@ namespace LogisticsApp {
 				r = _settings->NewRow();
 				r["Key"] = key;
 				r["Value"] = value;
+				r["ValueStr"] = "";
 				r["Note"] = "";
 				_settings->Rows->Add(r);
 			}
@@ -447,12 +576,62 @@ namespace LogisticsApp {
 			Save();
 		}
 
+		static String^ GetSettingStr(String^ key, String^ fallback)
+		{
+			Init();
+			DataRow^ r = _settings->Rows->Find(key);
+			if (r == nullptr) return fallback;
 
-		// Расширенная перегрузка AddOrder — соответствует параметрам из LoginWindow.h (оформление заказа)
+			try
+			{
+				if (_settings->Columns->Contains("ValueStr"))
+				{
+					String^ s = r["ValueStr"] != nullptr ? Convert::ToString(r["ValueStr"]) : "";
+					if (!String::IsNullOrWhiteSpace(s)) return s;
+				}
+			}
+			catch (...) {}
+
+			return fallback;
+		}
+
+		static void UpdateSettingStr(String^ key, String^ value)
+		{
+			Init();
+			DataRow^ r = _settings->Rows->Find(key);
+			if (r == nullptr)
+			{
+				r = _settings->NewRow();
+				r["Key"] = key;
+				r["Value"] = 0.0;
+				r["ValueStr"] = value;
+				r["Note"] = "";
+				_settings->Rows->Add(r);
+			}
+			else
+			{
+				if (_settings->Columns->Contains("ValueStr"))
+					r["ValueStr"] = value;
+			}
+			Save();
+		}
+
+		static String^ GetAdminPassword()
+		{
+			return GetSettingStr("AdminPassword", "1111");
+		}
+
+		static void SetAdminPassword(String^ newPass)
+		{
+			if (newPass == nullptr) newPass = "";
+			UpdateSettingStr("AdminPassword", newPass);
+		}
+
+		// Расширенная перегрузка AddOrder — соответствует данным из LoginWindow (оформление заказа)
 		static int AddOrder(
 			OrderDraft^ d,
-			String^ senderName, String^ senderPhone, String^ senderType,
-			String^ recipientName, String^ recipientPhone, String^ recipientType,
+			String^ senderName, String^ senderPhone, String^ senderEmail, String^ senderType,
+			String^ recipientName, String^ recipientPhone, String^ recipientEmail, String^ recipientType,
 			String^ senderInn, String^ senderOrgName, String^ senderOpf, String^ senderKpp,
 			String^ senderPassSeries, String^ senderPassNumber, DateTime senderPassDate,
 			String^ recipientInn, String^ recipientOrgName, String^ recipientOpf, String^ recipientKpp,
@@ -464,10 +643,12 @@ namespace LogisticsApp {
 			DataRow^ r = _orders->NewRow();
 			r["SenderName"] = senderName;
 			r["SenderPhone"] = senderPhone;
+			r["SenderEmail"] = senderEmail;
 			r["SenderType"] = senderType;
 
 			r["RecipientName"] = recipientName;
 			r["RecipientPhone"] = recipientPhone;
+			r["RecipientEmail"] = recipientEmail;
 			r["RecipientType"] = recipientType;
 
 			r["SenderInn"] = senderInn;
@@ -521,8 +702,14 @@ namespace LogisticsApp {
 
 			_orders->Rows->Add(r);
 
-			// Автоматически добавим получателя в Clients
-			UpsertClient(recipientName, recipientPhone);
+			// Добавим/обновим клиентов (и отправителя, и получателя)
+			UpsertClient(senderName, senderPhone, senderEmail, senderType,
+				senderInn, senderOrgName, senderOpf, senderKpp,
+				senderPassSeries, senderPassNumber, senderPassDate);
+
+			UpsertClient(recipientName, recipientPhone, recipientEmail, recipientType,
+				recipientInn, recipientOrgName, recipientOpf, recipientKpp,
+				recipientPassSeries, recipientPassNumber, recipientPassDate);
 
 			Save();
 			return Convert::ToInt32(r["Id"]);
@@ -530,6 +717,24 @@ namespace LogisticsApp {
 
 		// Алиасы для совместимости со старыми вызовами (если где-то остались)
 		static int AddOrderEx(
+			OrderDraft^ d,
+			String^ senderName, String^ senderPhone, String^ senderEmail, String^ senderType,
+			String^ recipientName, String^ recipientPhone, String^ recipientEmail, String^ recipientType,
+			String^ senderInn, String^ senderOrgName, String^ senderOpf, String^ senderKpp,
+			String^ senderPassSeries, String^ senderPassNumber, DateTime senderPassDate,
+			String^ recipientInn, String^ recipientOrgName, String^ recipientOpf, String^ recipientKpp,
+			String^ recipientPassSeries, String^ recipientPassNumber, DateTime recipientPassDate)
+		{
+			return AddOrder(d,
+				senderName, senderPhone, senderEmail, senderType,
+				recipientName, recipientPhone, recipientEmail, recipientType,
+				senderInn, senderOrgName, senderOpf, senderKpp,
+				senderPassSeries, senderPassNumber, senderPassDate,
+				recipientInn, recipientOrgName, recipientOpf, recipientKpp,
+				recipientPassSeries, recipientPassNumber, recipientPassDate);
+		}
+
+		static int AddOrder(
 			OrderDraft^ d,
 			String^ senderName, String^ senderPhone, String^ senderType,
 			String^ recipientName, String^ recipientPhone, String^ recipientType,
@@ -539,12 +744,26 @@ namespace LogisticsApp {
 			String^ recipientPassSeries, String^ recipientPassNumber, DateTime recipientPassDate)
 		{
 			return AddOrder(d,
-				senderName, senderPhone, senderType,
-				recipientName, recipientPhone, recipientType,
+				senderName, senderPhone, "", senderType,
+				recipientName, recipientPhone, "", recipientType,
 				senderInn, senderOrgName, senderOpf, senderKpp,
 				senderPassSeries, senderPassNumber, senderPassDate,
 				recipientInn, recipientOrgName, recipientOpf, recipientKpp,
 				recipientPassSeries, recipientPassNumber, recipientPassDate);
+		}
+
+		static int AddOrder(
+			OrderDraft^ d,
+			String^ senderName, String^ senderPhone, String^ senderType,
+			String^ recipientName, String^ recipientPhone, String^ recipientType)
+		{
+			return AddOrder(d,
+				senderName, senderPhone, "", senderType,
+				recipientName, recipientPhone, "", recipientType,
+				"", "", "", "",
+				"", "", DateTime::MinValue,
+				"", "", "", "",
+				"", "", DateTime::MinValue);
 		}
 
 		static int AddOrderEx(
@@ -554,64 +773,6 @@ namespace LogisticsApp {
 		{
 			return AddOrder(d, senderName, senderPhone, senderType, recipientName, recipientPhone, recipientType);
 		}
-
-		static int AddOrder(
-			OrderDraft^ d,
-			String^ senderName, String^ senderPhone, String^ senderType,
-			String^ recipientName, String^ recipientPhone, String^ recipientType)
-		{
-			Init();
-			if (d == nullptr) return -1;
-
-			DataRow^ r = _orders->NewRow();
-			r["SenderName"] = senderName;
-			r["SenderPhone"] = senderPhone;
-			r["SenderType"] = senderType;
-
-			r["RecipientName"] = recipientName;
-			r["RecipientPhone"] = recipientPhone;
-			r["RecipientType"] = recipientType;
-
-			r["CityFrom"] = d->CityFrom;
-			r["CityTo"] = d->CityTo;
-			r["DistanceKm"] = d->DistanceKm;
-
-			r["CargoType"] = d->CargoType;
-			r["CargoTypeIndex"] = d->CargoTypeIndex;
-			r["WeightKg"] = d->WeightKg;
-			r["VolumeM3"] = d->VolumeM3;
-			r["LengthM"] = d->LengthM;
-			r["DeclaredValue"] = d->DeclaredValue;
-
-			r["PickupFromAddress"] = d->PickupFromAddress;
-			r["DeliveryToAddress"] = d->DeliveryToAddress;
-			r["FromAddress"] = d->FromAddress;
-			r["ToAddress"] = d->ToAddress;
-
-			r["OptProtectPack"] = d->OptProtectPack;
-			r["OptPallet"] = d->OptPallet;
-			r["OptFloorDelivery"] = d->OptFloorDelivery;
-			r["OptDocsA"] = d->OptDocsA;
-			r["OptDocsB"] = d->OptDocsB;
-
-			r["DeliveryType"] = d->DeliveryType;
-
-			r["BaseCost"] = d->BaseCost;
-			r["OptionsCost"] = d->OptionsCost;
-			r["InsuranceCost"] = d->InsuranceCost;
-			r["TotalCost"] = d->TotalCost;
-
-			r["Status"] = "Создан";
-			r["CreatedAt"] = DateTime::Now;
-			r["UpdatedAt"] = DateTime::Now;
-
-			_orders->Rows->Add(r);
-
-			// Автоматически добавим получателя в Clients
-			UpsertClient(recipientName, recipientPhone);
-
-			Save();
-			return Convert::ToInt32(r["Id"]);
-		}
 	};
+
 }

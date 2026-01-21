@@ -1,12 +1,15 @@
 ﻿#pragma once
-
-// AdminWindow без дизайнера. Структура:
-// - Главная: дашборд
-// - Заказы: DataGridView + статус/удаление
-// - Клиенты: база клиентов + история заказов
-// - Настройки стоимости: редактирование коэффициентов/цен
+// AdminWindow.h (no designer) — единый стиль, без лямбд, без auto, без HashSet.
+// Вкладки:
+//  - Главная (дашборд)
+//  - Заказы (таблица + статус/удаление)
+//  - Клиенты (Одна таблица: Фамилия/Имя/Отчество/Паспорт/Телефон отправителя)
+//  - Настройки стоимости (редактирование Settings из AppStorage)
 //
-// ВАЖНО: без лямбд (C++/CLI часто ругается), без символа RUBLE (чтобы не было проблем с кодовой страницей).
+// ВАЖНО:
+//  - Никаких лямбда-выражений (C++/CLI часто ломается)
+//  - Никаких «₽» и прочих спорных символов (используем "руб")
+//  - Паддинги и Dock/Anchor, чтобы ничего не "съезжало"
 
 #include "AppStorage.h"
 
@@ -21,11 +24,11 @@ namespace LogisticsApp {
     public ref class AdminWindow : public Form
     {
     public:
-        AdminWindow(void)
+        AdminWindow()
         {
             InitializeComponent();
             AppStorage::Init();
-            BuildAdminUI();
+            BuildUI();
             ShowPage("Главная");
             RefreshDashboard();
         }
@@ -58,10 +61,9 @@ namespace LogisticsApp {
         Button^ btnApplyStatus;
         Button^ btnDeleteOrder;
 
-        // Clients
+        // Clients (ONE grid)
         DataGridView^ dgvClients;
-        DataGridView^ dgvClientOrders;
-        DataView^ clientOrdersView;
+        DataTable^ dtClientsView;
 
         // Settings
         Dictionary<String^, NumericUpDown^>^ settingEditors;
@@ -82,7 +84,7 @@ namespace LogisticsApp {
         }
 #pragma endregion
 
-        // ===== colors/fonts =====
+        // ===== theme helpers =====
         Color C_Back() { return Color::FromArgb(240, 242, 245); }
         Color C_Side() { return Color::FromArgb(32, 36, 48); }
         Color C_SideHover() { return Color::FromArgb(55, 63, 85); }
@@ -117,13 +119,11 @@ namespace LogisticsApp {
             btn->Cursor = Cursors::Hand;
         }
 
-        void StyleGrid(DataGridView^ g)
+        void StyleGridBase(DataGridView^ g)
         {
             g->Dock = DockStyle::Fill;
             g->BackgroundColor = Color::White;
             g->BorderStyle = BorderStyle::None;
-            g->AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode::None;
-            g->AutoSizeRowsMode = DataGridViewAutoSizeRowsMode::None;
             g->SelectionMode = DataGridViewSelectionMode::FullRowSelect;
             g->MultiSelect = false;
             g->ReadOnly = true;
@@ -139,98 +139,12 @@ namespace LogisticsApp {
             g->DefaultCellStyle->ForeColor = C_TextDark();
             g->DefaultCellStyle->SelectionBackColor = Color::FromArgb(210, 220, 235);
             g->DefaultCellStyle->SelectionForeColor = C_TextDark();
+            g->AutoSizeRowsMode = DataGridViewAutoSizeRowsMode::None;
+            g->RowTemplate->Height = 28;
+            g->ScrollBars = ScrollBars::Both;
         }
 
-
-        void ShowColumn(DataGridView^ grid, String^ colName, String^ header, int displayIndex, int width)
-        {
-            if (grid == nullptr) return;
-            if (!grid->Columns->Contains(colName)) return;
-
-            DataGridViewColumn^ c = grid->Columns[colName];
-            c->Visible = true;
-            c->HeaderText = header;
-            c->DisplayIndex = displayIndex;
-            c->AutoSizeMode = DataGridViewAutoSizeColumnMode::None;
-            c->Width = width;
-            c->MinimumWidth = Math::Min(width, 60);
-        }
-
-        void HideAllColumns(DataGridView^ grid)
-        {
-            if (grid == nullptr) return;
-            for each (DataGridViewColumn ^ c in grid->Columns)
-            {
-                c->Visible = false;
-                c->MinimumWidth = 60;
-            }
-        }
-
-        void ConfigureOrdersGrid()
-        {
-            if (dgvOrders == nullptr) return;
-
-            HideAllColumns(dgvOrders);
-
-            // Ключевые колонки (компактный набор)
-            ShowColumn(dgvOrders, "Id", "ID", 0, 50);
-            ShowColumn(dgvOrders, "CreatedAt", "Дата", 1, 120);
-            ShowColumn(dgvOrders, "Status", "Статус", 2, 120);
-            ShowColumn(dgvOrders, "CityFrom", "Откуда", 3, 120);
-            ShowColumn(dgvOrders, "CityTo", "Куда", 4, 120);
-            ShowColumn(dgvOrders, "DistanceKm", "Км", 5, 60);
-            ShowColumn(dgvOrders, "CargoType", "Груз", 6, 120);
-            ShowColumn(dgvOrders, "WeightKg", "Вес, кг", 7, 80);
-            ShowColumn(dgvOrders, "TotalCost", "�?того, руб", 8, 110);
-            ShowColumn(dgvOrders, "RecipientName", "Получатель", 9, 160);
-            ShowColumn(dgvOrders, "RecipientPhone", "Телефон", 10, 120);
-
-            // Форматы
-            if (dgvOrders->Columns->Contains("TotalCost"))
-                dgvOrders->Columns["TotalCost"]->DefaultCellStyle->Format = "N0";
-
-            if (dgvOrders->Columns->Contains("CreatedAt"))
-                dgvOrders->Columns["CreatedAt"]->DefaultCellStyle->Format = "dd.MM.yyyy HH:mm";
-
-            // Перенос заголовков и горизонтальный скролл (если окно узкое)
-            dgvOrders->ColumnHeadersDefaultCellStyle->WrapMode = DataGridViewTriState::True;
-            dgvOrders->ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-            dgvOrders->ScrollBars = ScrollBars::Both;
-        }
-
-        void ConfigureClientsGrid()
-        {
-            if (dgvClients == nullptr) return;
-
-            HideAllColumns(dgvClients);
-            ShowColumn(dgvClients, "Id", "ID", 0, 50);
-            ShowColumn(dgvClients, "Name", "�?мя", 1, 160);
-            ShowColumn(dgvClients, "Phone", "Телефон", 2, 120);
-            dgvClients->ScrollBars = ScrollBars::Both;
-        }
-
-        void ConfigureClientOrdersGrid()
-        {
-            if (dgvClientOrders == nullptr) return;
-
-            HideAllColumns(dgvClientOrders);
-            ShowColumn(dgvClientOrders, "Id", "ID", 0, 50);
-            ShowColumn(dgvClientOrders, "CreatedAt", "Дата", 1, 120);
-            ShowColumn(dgvClientOrders, "Status", "Статус", 2, 120);
-            ShowColumn(dgvClientOrders, "CityFrom", "Откуда", 3, 120);
-            ShowColumn(dgvClientOrders, "CityTo", "Куда", 4, 120);
-            ShowColumn(dgvClientOrders, "TotalCost", "�?того, руб", 5, 110);
-
-            if (dgvClientOrders->Columns->Contains("TotalCost"))
-                dgvClientOrders->Columns["TotalCost"]->DefaultCellStyle->Format = "N0";
-
-            if (dgvClientOrders->Columns->Contains("CreatedAt"))
-                dgvClientOrders->Columns["CreatedAt"]->DefaultCellStyle->Format = "dd.MM.yyyy HH:mm";
-
-            dgvClientOrders->ScrollBars = ScrollBars::Both;
-        }
-
-        Panel^ MakeCardDocked()
+        Panel^ MakeCard()
         {
             Panel^ card = gcnew Panel();
             card->Dock = DockStyle::Fill;
@@ -245,7 +159,7 @@ namespace LogisticsApp {
             page->Dock = DockStyle::Fill;
             page->Visible = false;
             page->BackColor = C_Back();
-            page->Padding = System::Windows::Forms::Padding(24);
+            page->Padding = System::Windows::Forms::Padding(24); // <-- паддинг страницы
             pnContent->Controls->Add(page);
             pages[key] = page;
             return page;
@@ -263,7 +177,7 @@ namespace LogisticsApp {
 
         Panel^ MakeStatCard(String^ title, Label^% valueLabel)
         {
-            Panel^ card = MakeCardDocked();
+            Panel^ card = MakeCard();
             card->Padding = System::Windows::Forms::Padding(16);
 
             Label^ t = gcnew Label();
@@ -285,8 +199,8 @@ namespace LogisticsApp {
             return card;
         }
 
-        // ===== build UI =====
-        void BuildAdminUI()
+        // ===== Build UI =====
+        void BuildUI()
         {
             this->SuspendLayout();
             this->BackColor = C_Back();
@@ -342,7 +256,7 @@ namespace LogisticsApp {
             lblTitle->TextAlign = ContentAlignment::MiddleLeft;
             lblTitle->Font = F_Title();
             lblTitle->ForeColor = C_TextDark();
-            lblTitle->Padding = System::Windows::Forms::Padding(16, 0, 0, 0);
+            lblTitle->Padding = System::Windows::Forms::Padding(16, 0, 0, 0); // <-- паддинг заголовка
             lblTitle->Text = L"Админ-панель";
             pnTop->Controls->Add(lblTitle);
 
@@ -356,7 +270,7 @@ namespace LogisticsApp {
             this->Controls->Add(pnMain);
             this->Controls->Add(pnSidebar);
 
-            // Nav
+            // Nav (сверху вниз — добавляем в обратном порядке для DockStyle::Top)
             AddNavButton(pnSidebarBottom, "Выход");
             AddNavButton(pnSidebarMenu, "Настройки стоимости");
             AddNavButton(pnSidebarMenu, "Клиенты");
@@ -373,7 +287,7 @@ namespace LogisticsApp {
             this->PerformLayout();
         }
 
-        // ===== pages =====
+        // ===== Pages =====
         void BuildHomePage()
         {
             Panel^ page = CreatePage("Главная");
@@ -412,7 +326,7 @@ namespace LogisticsApp {
             lblStatRevenue = v2;
             lblStatActive = v3;
 
-            Panel^ hint = MakeCardDocked();
+            Panel^ hint = MakeCard();
             hint->Padding = System::Windows::Forms::Padding(16);
 
             Label^ ht = gcnew Label();
@@ -438,7 +352,8 @@ namespace LogisticsApp {
         {
             Panel^ page = CreatePage("Заказы");
 
-            Panel^ card = MakeCardDocked();
+            Panel^ card = MakeCard();
+            card->Padding = System::Windows::Forms::Padding(12); // <-- паддинг карточки
             page->Controls->Add(card);
 
             TableLayoutPanel^ lay = gcnew TableLayoutPanel();
@@ -450,15 +365,15 @@ namespace LogisticsApp {
             card->Controls->Add(lay);
 
             dgvOrders = gcnew DataGridView();
-            StyleGrid(dgvOrders);
+            StyleGridBase(dgvOrders);
+            dgvOrders->AutoGenerateColumns = true;
             dgvOrders->DataSource = AppStorage::Orders();
-            ConfigureOrdersGrid();
             dgvOrders->SelectionChanged += gcnew EventHandler(this, &AdminWindow::OnOrderSelectionChanged);
             lay->Controls->Add(dgvOrders, 0, 0);
 
             Panel^ tools = gcnew Panel();
             tools->Dock = DockStyle::Fill;
-            tools->Padding = System::Windows::Forms::Padding(14);
+            tools->Padding = System::Windows::Forms::Padding(14); // <-- паддинг инструментов
             lay->Controls->Add(tools, 1, 0);
 
             Label^ t = gcnew Label();
@@ -502,19 +417,68 @@ namespace LogisticsApp {
             btnDeleteOrder->BackColor = Color::FromArgb(180, 60, 60);
             btnDeleteOrder->Click += gcnew EventHandler(this, &AdminWindow::OnDeleteOrder);
             tools->Controls->Add(btnDeleteOrder);
+
+            ConfigureOrdersGrid(); // <-- фиксируем колонки и ширины
+        }
+
+        void ConfigureOrdersGrid()
+        {
+            if (dgvOrders == nullptr) return;
+
+            dgvOrders->AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode::None;
+            dgvOrders->ScrollBars = ScrollBars::Both;
+
+            // Скрываем всё, потом включаем нужное (если колонки существуют в DataTable)
+            for each (DataGridViewColumn ^ c in dgvOrders->Columns)
+            {
+                c->Visible = false;
+                c->SortMode = DataGridViewColumnSortMode::Automatic;
+            }
+
+            ShowOrderColumn("Id", "ID", 60);
+            ShowOrderColumn("CreatedAt", "Дата", 140);
+            ShowOrderColumn("Status", "Статус", 120);
+            ShowOrderColumn("CityFrom", "Откуда", 140);
+            ShowOrderColumn("CityTo", "Куда", 140);
+            ShowOrderColumn("DistanceKm", "Км", 70);
+            ShowOrderColumn("CargoType", "Груз", 140);
+            ShowOrderColumn("WeightKg", "Вес", 80);
+            ShowOrderColumn("OptionsCost", "Серв.", 90);
+            ShowOrderColumn("TotalCost", "Итого", 110);
+            ShowOrderColumn("RecipientName", "Получатель", 160);
+            ShowOrderColumn("RecipientPhone", "Телефон", 140);
+
+            // формат денег
+            if (dgvOrders->Columns->Contains("TotalCost"))
+                dgvOrders->Columns["TotalCost"]->DefaultCellStyle->Format = "N0";
+            if (dgvOrders->Columns->Contains("OptionsCost"))
+                dgvOrders->Columns["OptionsCost"]->DefaultCellStyle->Format = "N0";
+        }
+
+        void ShowOrderColumn(String^ name, String^ header, int width)
+        {
+            if (dgvOrders == nullptr) return;
+            if (!dgvOrders->Columns->Contains(name)) return;
+
+            DataGridViewColumn^ c = dgvOrders->Columns[name];
+            c->Visible = true;
+            c->HeaderText = header;
+            c->Width = width;
+            c->MinimumWidth = 50;
         }
 
         void BuildClientsPage()
         {
-            Panel^ page = CreatePage("�������");
+            Panel^ page = CreatePage("Клиенты");
 
-            Panel^ card = MakeCardDocked();
+            Panel^ card = MakeCard();
+            card->Padding = System::Windows::Forms::Padding(12);
             page->Controls->Add(card);
 
             TableLayoutPanel^ lay = gcnew TableLayoutPanel();
             lay->Dock = DockStyle::Fill;
-            lay->ColumnCount = 1;
             lay->RowCount = 2;
+            lay->ColumnCount = 1;
             lay->RowStyles->Add(gcnew RowStyle(SizeType::Absolute, 56.0f));
             lay->RowStyles->Add(gcnew RowStyle(SizeType::Percent, 100.0f));
             card->Controls->Add(lay);
@@ -525,7 +489,7 @@ namespace LogisticsApp {
             lay->Controls->Add(header, 0, 0);
 
             Label^ t = gcnew Label();
-            t->Text = "���� ��������";
+            t->Text = "Клиенты (по отправителю)";
             t->Font = F_Title();
             t->ForeColor = C_TextDark();
             t->AutoSize = true;
@@ -533,11 +497,77 @@ namespace LogisticsApp {
             header->Controls->Add(t);
 
             dgvClients = gcnew DataGridView();
-            StyleGrid(dgvClients);
-            dgvClients->Dock = DockStyle::Fill;
-            dgvClients->DataSource = AppStorage::Clients();
-            ConfigureClientsGrid();
+            StyleGridBase(dgvClients);
+            dgvClients->AutoGenerateColumns = true;
             lay->Controls->Add(dgvClients, 0, 1);
+
+            // Витрина клиентов
+            dtClientsView = gcnew DataTable("ClientsView");
+            dtClientsView->Columns->Add("LastName", String::typeid);
+            dtClientsView->Columns->Add("FirstName", String::typeid);
+            dtClientsView->Columns->Add("MiddleName", String::typeid);
+            dtClientsView->Columns->Add("Passport", String::typeid); // серия номер
+            dtClientsView->Columns->Add("SenderPhone", String::typeid);
+
+            dgvClients->DataSource = dtClientsView;
+            dgvClients->AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode::Fill;
+        }
+
+        void RefreshClientsFromOrders()
+        {
+            if (dtClientsView == nullptr) return;
+
+            dtClientsView->Rows->Clear();
+
+            DataTable^ orders = AppStorage::Orders();
+            Dictionary<String^, bool>^ seen = gcnew Dictionary<String^, bool>();
+
+            for each (DataRow ^ r in orders->Rows)
+            {
+                if (r->RowState == DataRowState::Deleted) continue;
+
+                String^ phone = (r->Table->Columns->Contains("SenderPhone") && r["SenderPhone"] != nullptr)
+                    ? Convert::ToString(r["SenderPhone"])
+                    : "";
+
+                if (String::IsNullOrWhiteSpace(phone)) continue;
+                if (seen->ContainsKey(phone)) continue;
+                seen[phone] = true;
+
+                String^ last = "";
+                String^ first = "";
+                String^ mid = "";
+
+                // Если у тебя ФИО хранится одной строкой SenderName — аккуратно разложим по частям.
+                if (r->Table->Columns->Contains("SenderLastName")) last = Convert::ToString(r["SenderLastName"]);
+                if (r->Table->Columns->Contains("SenderFirstName")) first = Convert::ToString(r["SenderFirstName"]);
+                if (r->Table->Columns->Contains("SenderMiddleName")) mid = Convert::ToString(r["SenderMiddleName"]);
+
+                if (String::IsNullOrWhiteSpace(last) && r->Table->Columns->Contains("SenderName"))
+                {
+                    String^ fio = Convert::ToString(r["SenderName"]);
+                    array<String^>^ parts = fio->Split(gcnew array<wchar_t>{' '}, StringSplitOptions::RemoveEmptyEntries);
+                    if (parts->Length > 0) last = parts[0];
+                    if (parts->Length > 1) first = parts[1];
+                    if (parts->Length > 2) mid = parts[2];
+                }
+
+                String^ ps = (r->Table->Columns->Contains("SenderPassportSeries") && r["SenderPassportSeries"] != nullptr)
+                    ? Convert::ToString(r["SenderPassportSeries"])
+                    : "";
+                String^ pn = (r->Table->Columns->Contains("SenderPassportNumber") && r["SenderPassportNumber"] != nullptr)
+                    ? Convert::ToString(r["SenderPassportNumber"])
+                    : "";
+                String^ passport = (ps + " " + pn)->Trim();
+
+                DataRow^ nr = dtClientsView->NewRow();
+                nr["LastName"] = last;
+                nr["FirstName"] = first;
+                nr["MiddleName"] = mid;
+                nr["Passport"] = passport;
+                nr["SenderPhone"] = phone;
+                dtClientsView->Rows->Add(nr);
+            }
         }
 
         void AddSettingRow(Panel^ wrap, String^ key, String^ title, double min, double max, double step, int decimals, int% y)
@@ -571,7 +601,8 @@ namespace LogisticsApp {
         {
             Panel^ page = CreatePage("Настройки стоимости");
 
-            Panel^ card = MakeCardDocked();
+            Panel^ card = MakeCard();
+            card->Padding = System::Windows::Forms::Padding(12);
             page->Controls->Add(card);
 
             Panel^ wrap = gcnew Panel();
@@ -623,25 +654,45 @@ namespace LogisticsApp {
             wrap->Controls->Add(btnSaveSettings);
         }
 
-        // ===== navigation / stats =====
+        // ===== Navigation =====
         void ShowPage(String^ key)
         {
-            if (key == "Выход") { this->Close(); return; }
+            if (key == "Выход")
+            {
+                this->Close();
+                return;
+            }
 
-            for each (auto kv in pages) kv.Value->Visible = false;
-            for each (auto kv in navButtons) { kv.Value->BackColor = C_Side(); kv.Value->ForeColor = Color::FromArgb(220, 220, 220); }
+            // hide all
+            for each (KeyValuePair<String^, Panel^> kv in pages)
+                kv.Value->Visible = false;
 
-            if (pages->ContainsKey(key)) pages[key]->Visible = true;
-            if (navButtons->ContainsKey(key)) { navButtons[key]->BackColor = C_SideHover(); navButtons[key]->ForeColor = Color::White; }
+            // reset nav
+            for each (KeyValuePair<String^, Button^> kv in navButtons)
+            {
+                kv.Value->BackColor = C_Side();
+                kv.Value->ForeColor = Color::FromArgb(220, 220, 220);
+            }
+
+            if (pages->ContainsKey(key))
+                pages[key]->Visible = true;
+
+            if (navButtons->ContainsKey(key))
+            {
+                navButtons[key]->BackColor = C_SideHover();
+                navButtons[key]->ForeColor = Color::White;
+            }
 
             lblTitle->Text = key;
+
             if (key == "Главная") RefreshDashboard();
+            if (key == "Клиенты") RefreshClientsFromOrders();
+            if (key == "Заказы") ConfigureOrdersGrid();
         }
 
         void RefreshDashboard()
         {
             DataTable^ t = AppStorage::Orders();
-
             int total = t->Rows->Count;
             int active = 0;
             double revenue = 0.0;
@@ -658,12 +709,12 @@ namespace LogisticsApp {
                 catch (...) {}
             }
 
-            if (lblStatOrders) lblStatOrders->Text = total.ToString();
-            if (lblStatActive) lblStatActive->Text = active.ToString();
+            if (lblStatOrders)  lblStatOrders->Text = total.ToString();
+            if (lblStatActive)  lblStatActive->Text = active.ToString();
             if (lblStatRevenue) lblStatRevenue->Text = String::Format("{0:N0} руб", revenue);
         }
 
-        // ===== events =====
+        // ===== Events =====
         System::Void OnNavClick(System::Object^ sender, System::EventArgs^)
         {
             Button^ btn = dynamic_cast<Button^>(sender);
@@ -672,10 +723,13 @@ namespace LogisticsApp {
 
         int SelectedOrderId()
         {
-            if (dgvOrders == nullptr || dgvOrders->SelectedRows->Count == 0) return -1;
+            if (dgvOrders == nullptr) return -1;
+            if (dgvOrders->SelectedRows->Count == 0) return -1;
+
             DataGridViewRow^ row = dgvOrders->SelectedRows[0];
             if (row == nullptr) return -1;
 
+            if (!dgvOrders->Columns->Contains("Id")) return -1;
             Object^ v = row->Cells["Id"]->Value;
             if (v == nullptr) return -1;
 
@@ -686,7 +740,9 @@ namespace LogisticsApp {
         DataRow^ FindOrderRow(int id)
         {
             if (id <= 0) return nullptr;
-            return AppStorage::Orders()->Rows->Find(id);
+            // Для Rows->Find() нужен PrimaryKey. Он у нас должен быть в AppStorage.
+            try { return AppStorage::Orders()->Rows->Find(id); }
+            catch (...) { return nullptr; }
         }
 
         System::Void OnOrderSelectionChanged(System::Object^, System::EventArgs^)
@@ -711,9 +767,12 @@ namespace LogisticsApp {
             }
 
             r["Status"] = cbStatus->SelectedItem != nullptr ? cbStatus->SelectedItem->ToString() : "Создан";
-            r["UpdatedAt"] = DateTime::Now;
+            if (r->Table->Columns->Contains("UpdatedAt"))
+                r["UpdatedAt"] = DateTime::Now;
+
             AppStorage::Save();
             RefreshDashboard();
+            ConfigureOrdersGrid();
         }
 
         System::Void OnDeleteOrder(System::Object^, System::EventArgs^)
@@ -726,40 +785,21 @@ namespace LogisticsApp {
                 return;
             }
 
-            System::Windows::Forms::DialogResult res = MessageBox::Show(
-                "Удалить выбранный заказ?", "Подтверждение",
-                MessageBoxButtons::YesNo, MessageBoxIcon::Warning);
+            System::Windows::Forms::DialogResult res =
+                MessageBox::Show("Удалить выбранный заказ?", "Подтверждение",
+                    MessageBoxButtons::YesNo, MessageBoxIcon::Warning);
 
             if (res != System::Windows::Forms::DialogResult::Yes) return;
 
             r->Delete();
-            AppStorage::Orders()->AcceptChanges();
             AppStorage::Save();
             RefreshDashboard();
-        }
-
-        System::Void OnClientSelectionChanged(System::Object^, System::EventArgs^)
-        {
-            if (dgvClients == nullptr || dgvClients->SelectedRows->Count == 0)
-            {
-                if (clientOrdersView) clientOrdersView->RowFilter = "1=0";
-                return;
-            }
-
-            DataGridViewRow^ row = dgvClients->SelectedRows[0];
-            if (row == nullptr) return;
-
-            Object^ v = row->Cells["Phone"]->Value;
-            String^ phone = v != nullptr ? v->ToString() : "";
-            if (String::IsNullOrWhiteSpace(phone)) { clientOrdersView->RowFilter = "1=0"; return; }
-
-            String^ safe = phone->Replace("'", "''");
-            clientOrdersView->RowFilter = String::Format("RecipientPhone = '{0}'", safe);
+            ConfigureOrdersGrid();
         }
 
         System::Void OnSaveSettings(System::Object^, System::EventArgs^)
         {
-            for each (auto kv in settingEditors)
+            for each (KeyValuePair<String^, NumericUpDown^> kv in settingEditors)
             {
                 String^ key = kv.Key;
                 NumericUpDown^ n = kv.Value;
@@ -770,4 +810,5 @@ namespace LogisticsApp {
             MessageBox::Show("Настройки сохранены.", "Настройки стоимости", MessageBoxButtons::OK, MessageBoxIcon::Information);
         }
     };
-}
+
+} // namespace LogisticsApp

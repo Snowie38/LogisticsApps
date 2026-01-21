@@ -88,23 +88,6 @@ namespace LogisticsApp {
 			t->Columns->Add("RecipientPhone", String::typeid);
 			t->Columns->Add("RecipientType", String::typeid);
 
-			// Доп. данные отправителя/получателя (паспорт/ИНН/реквизиты)
-			t->Columns->Add("SenderPassportSeries", String::typeid);
-			t->Columns->Add("SenderPassportNumber", String::typeid);
-			t->Columns->Add("SenderPassportDate", DateTime::typeid);
-			t->Columns->Add("SenderInn", String::typeid);
-			t->Columns->Add("SenderOrgName", String::typeid);
-			t->Columns->Add("SenderOpf", String::typeid);
-			t->Columns->Add("SenderKpp", String::typeid);
-
-			t->Columns->Add("RecipientPassportSeries", String::typeid);
-			t->Columns->Add("RecipientPassportNumber", String::typeid);
-			t->Columns->Add("RecipientPassportDate", DateTime::typeid);
-			t->Columns->Add("RecipientInn", String::typeid);
-			t->Columns->Add("RecipientOrgName", String::typeid);
-			t->Columns->Add("RecipientOpf", String::typeid);
-			t->Columns->Add("RecipientKpp", String::typeid);
-
 			// Маршрут / груз (из ClientWindow)
 			t->Columns->Add("CityFrom", String::typeid);
 			t->Columns->Add("CityTo", String::typeid);
@@ -144,22 +127,6 @@ namespace LogisticsApp {
 
 			t->Columns["Status"]->DefaultValue = "Создан";
 			t->Columns["CreatedAt"]->DefaultValue = DateTime::Now;
-			t->Columns["SenderPassportSeries"]->DefaultValue = "";
-			t->Columns["SenderPassportNumber"]->DefaultValue = "";
-			t->Columns["SenderPassportDate"]->DefaultValue = DateTime::MinValue;
-			t->Columns["SenderInn"]->DefaultValue = "";
-			t->Columns["SenderOrgName"]->DefaultValue = "";
-			t->Columns["SenderOpf"]->DefaultValue = "";
-			t->Columns["SenderKpp"]->DefaultValue = "";
-
-			t->Columns["RecipientPassportSeries"]->DefaultValue = "";
-			t->Columns["RecipientPassportNumber"]->DefaultValue = "";
-			t->Columns["RecipientPassportDate"]->DefaultValue = DateTime::MinValue;
-			t->Columns["RecipientInn"]->DefaultValue = "";
-			t->Columns["RecipientOrgName"]->DefaultValue = "";
-			t->Columns["RecipientOpf"]->DefaultValue = "";
-			t->Columns["RecipientKpp"]->DefaultValue = "";
-
 			t->Columns["UpdatedAt"]->DefaultValue = DateTime::Now;
 
 			return t;
@@ -251,22 +218,6 @@ namespace LogisticsApp {
 			EnsureColumn(_orders, "RecipientPhone", String::typeid, "");
 			EnsureColumn(_orders, "RecipientType", String::typeid, "");
 
-			EnsureColumn(_orders, "SenderPassportSeries", String::typeid, "");
-			EnsureColumn(_orders, "SenderPassportNumber", String::typeid, "");
-			EnsureColumn(_orders, "SenderPassportDate", DateTime::typeid, DateTime::MinValue);
-			EnsureColumn(_orders, "SenderInn", String::typeid, "");
-			EnsureColumn(_orders, "SenderOrgName", String::typeid, "");
-			EnsureColumn(_orders, "SenderOpf", String::typeid, "");
-			EnsureColumn(_orders, "SenderKpp", String::typeid, "");
-
-			EnsureColumn(_orders, "RecipientPassportSeries", String::typeid, "");
-			EnsureColumn(_orders, "RecipientPassportNumber", String::typeid, "");
-			EnsureColumn(_orders, "RecipientPassportDate", DateTime::typeid, DateTime::MinValue);
-			EnsureColumn(_orders, "RecipientInn", String::typeid, "");
-			EnsureColumn(_orders, "RecipientOrgName", String::typeid, "");
-			EnsureColumn(_orders, "RecipientOpf", String::typeid, "");
-			EnsureColumn(_orders, "RecipientKpp", String::typeid, "");
-
 			EnsureColumn(_orders, "CityFrom", String::typeid, "");
 			EnsureColumn(_orders, "CityTo", String::typeid, "");
 			EnsureColumn(_orders, "DistanceKm", Int32::typeid, 0);
@@ -308,6 +259,12 @@ namespace LogisticsApp {
 			// Settings
 			EnsureColumn(_settings, "Value", Double::typeid, 0.0);
 			EnsureColumn(_settings, "Note", String::typeid, "");
+
+			// Удаляем старые/дублирующиеся колонки (если они есть в XML)
+			if (_orders->Columns->Contains("ClientName")) _orders->Columns->Remove("ClientName");
+			if (_orders->Columns->Contains("PhoneName"))  _orders->Columns->Remove("PhoneName");
+			if (_clients->Columns->Contains("ClientName")) _clients->Columns->Remove("ClientName");
+			if (_clients->Columns->Contains("PhoneName"))  _clients->Columns->Remove("PhoneName");
 
 			// defaults if missing
 			SeedDefaults();
@@ -451,92 +408,7 @@ namespace LogisticsApp {
 
 			_orders->Rows->Add(r);
 
-			// Автоматически добавим отправителя и получателя в Clients
-			UpsertClient(senderName, senderPhone);
-			UpsertClient(recipientName, recipientPhone);
-
-			Save();
-			return Convert::ToInt32(r["Id"]);
-		}
-
-		// Расширенное добавление заказа: сохраняет паспорт/ИНН/реквизиты отправителя и получателя
-		static int AddOrderEx(
-			OrderDraft^ d,
-			String^ senderName, String^ senderPhone, String^ senderType,
-			String^ recipientName, String^ recipientPhone, String^ recipientType,
-			String^ senderInn, String^ senderOrgName, String^ senderOpf, String^ senderKpp,
-			String^ senderPassSeries, String^ senderPassNumber, DateTime senderPassDate,
-			String^ recipientInn, String^ recipientOrgName, String^ recipientOpf, String^ recipientKpp,
-			String^ recipientPassSeries, String^ recipientPassNumber, DateTime recipientPassDate)
-		{
-			Init();
-			if (d == nullptr) return -1;
-
-			DataRow^ r = _orders->NewRow();
-
-			r["SenderName"] = senderName;
-			r["SenderPhone"] = senderPhone;
-			r["SenderType"] = senderType;
-
-			r["RecipientName"] = recipientName;
-			r["RecipientPhone"] = recipientPhone;
-			r["RecipientType"] = recipientType;
-
-			// доп. данные
-			r["SenderInn"] = senderInn;
-			r["SenderOrgName"] = senderOrgName;
-			r["SenderOpf"] = senderOpf;
-			r["SenderKpp"] = senderKpp;
-			r["SenderPassportSeries"] = senderPassSeries;
-			r["SenderPassportNumber"] = senderPassNumber;
-			r["SenderPassportDate"] = senderPassDate;
-
-			r["RecipientInn"] = recipientInn;
-			r["RecipientOrgName"] = recipientOrgName;
-			r["RecipientOpf"] = recipientOpf;
-			r["RecipientKpp"] = recipientKpp;
-			r["RecipientPassportSeries"] = recipientPassSeries;
-			r["RecipientPassportNumber"] = recipientPassNumber;
-			r["RecipientPassportDate"] = recipientPassDate;
-
-			// данные из черновика заказа
-			r["CityFrom"] = d->CityFrom;
-			r["CityTo"] = d->CityTo;
-			r["DistanceKm"] = d->DistanceKm;
-
-			r["CargoType"] = d->CargoType;
-			r["CargoTypeIndex"] = d->CargoTypeIndex;
-			r["WeightKg"] = d->WeightKg;
-			r["VolumeM3"] = d->VolumeM3;
-			r["LengthM"] = d->LengthM;
-			r["DeclaredValue"] = d->DeclaredValue;
-
-			r["PickupFromAddress"] = d->PickupFromAddress;
-			r["DeliveryToAddress"] = d->DeliveryToAddress;
-			r["FromAddress"] = d->FromAddress;
-			r["ToAddress"] = d->ToAddress;
-
-			r["OptProtectPack"] = d->OptProtectPack;
-			r["OptPallet"] = d->OptPallet;
-			r["OptFloorDelivery"] = d->OptFloorDelivery;
-			r["OptDocsA"] = d->OptDocsA;
-			r["OptDocsB"] = d->OptDocsB;
-
-			r["DeliveryType"] = d->DeliveryType;
-
-			r["BaseCost"] = d->BaseCost;
-			r["OptionsCost"] = d->OptionsCost;
-			r["InsuranceCost"] = d->InsuranceCost;
-			r["TotalCost"] = d->TotalCost;
-
-			r["Status"] = "Создан";
-			r["CreatedAt"] = DateTime::Now;
-			r["UpdatedAt"] = DateTime::Now;
-
-			_orders->Rows->Add(r);
-
-			// Автоматически добавим отправителя и получателя в Clients
-			UpsertClient(senderName, senderPhone);
+			// Автоматически добавим получателя в Clients
 			UpsertClient(recipientName, recipientPhone);
 
 			Save();

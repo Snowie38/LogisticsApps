@@ -2020,7 +2020,7 @@ namespace LogisticsApp {
 			return;
 		}
 
-		int orderId = AppStorage::AddOrderEx(
+		int orderId = AppStorage::AddOrder(
 			_draft,
 			senderName, senderPhone, senderTypeStr,
 			recipientName, recipientPhone, recipientTypeStr,

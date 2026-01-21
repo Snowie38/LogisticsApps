@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include "DistanceTable.h"
 #include <msclr/marshal_cppstd.h>
+#include "AppStorage.h"
 #include "LoginWindow.h"
 #include "UITheme.h"
-
 
 namespace LogisticsApp {
 
@@ -15,49 +15,25 @@ namespace LogisticsApp {
 	using namespace System::Drawing;
 	using namespace System::Globalization;
 
+	/// <summary>
+	/// Сводка для ClientWindow
+	/// </summary>
 	public ref class ClientWindow : public System::Windows::Forms::Form
 	{
 	public:
 		ClientWindow(void)
 		{
 			InitializeComponent();
+			AppStorage::Init();
+			// Приводим окно к единому стилю.
 			UITheme::Apply(this);
-			if (cb_type_cargo->Items->Count > 0)
-				cb_type_cargo->SelectedIndex = 0;
-
-			// Ввод параметров груза
-			tb_weight->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			tb_volume->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			tb_length->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			tb_nCost->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-
-			// Города 
-			tb_whereFrom->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			tb_where->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-
-			// Тип груза
-			cb_type_cargo->SelectedIndexChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-
-			// Доп опции
-			checkBox1->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			checkBox2->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			checkBox3->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			checkBox4->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			checkBox5->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-
-			// Адресные услуги
-			chb_from_adress->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			chb_where_adress->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-
-			// Тип доставки
-			rbStandard->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-			rbExpress->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
-
-			// чтобы сразу пересчитать значения при открытии окна
-			AnyValueChanged(nullptr, nullptr);
 		}
 
+
 	protected:
+		/// <summary>
+		/// Освободить все используемые ресурсы.
+		/// </summary>
 		~ClientWindow()
 		{
 			if (components)
@@ -121,21 +97,32 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label30;
 	private: System::Windows::Forms::GroupBox^ gbDeliveryType;
 	private: System::Windows::Forms::RadioButton^ rbExpress;
-	private: System::Windows::Forms::RadioButton^ rbStandard;
+	private: System::Windows::Forms::RadioButton^ rbCommon;
+
 	private: System::Windows::Forms::Label^ lblInsuranceCost;
 	private: System::Windows::Forms::Label^ lblOptionsCost;
+
+
 	private: System::Windows::Forms::Label^ lblWeightCost;
 	private: System::Windows::Forms::Label^ lblDistanceCost;
 	private: System::Windows::Forms::Label^ lb_COST;
 	private: System::Windows::Forms::Button^ btn_on_login_win;
+
 	protected:
 	protected:
 	protected:
 	protected:
 	private:
+		/// <summary>
+		/// Обязательная переменная конструктора.
+		/// </summary>
 		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
+		/// <summary>
+		/// Требуемый метод для поддержки конструктора — не изменяйте 
+		/// содержимое этого метода с помощью редактора кода.
+		/// </summary>
 		void InitializeComponent(void)
 		{
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
@@ -198,7 +185,7 @@ namespace LogisticsApp {
 			this->lblDistanceCost = (gcnew System::Windows::Forms::Label());
 			this->gbDeliveryType = (gcnew System::Windows::Forms::GroupBox());
 			this->rbExpress = (gcnew System::Windows::Forms::RadioButton());
-			this->rbStandard = (gcnew System::Windows::Forms::RadioButton());
+			this->rbCommon = (gcnew System::Windows::Forms::RadioButton());
 			this->label30 = (gcnew System::Windows::Forms::Label());
 			this->panel1->SuspendLayout();
 			this->panel4->SuspendLayout();
@@ -885,7 +872,7 @@ namespace LogisticsApp {
 			// gbDeliveryType
 			// 
 			this->gbDeliveryType->Controls->Add(this->rbExpress);
-			this->gbDeliveryType->Controls->Add(this->rbStandard);
+			this->gbDeliveryType->Controls->Add(this->rbCommon);
 			this->gbDeliveryType->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->gbDeliveryType->Location = System::Drawing::Point(31, 56);
@@ -906,17 +893,17 @@ namespace LogisticsApp {
 			this->rbExpress->UseVisualStyleBackColor = true;
 			this->rbExpress->CheckedChanged += gcnew System::EventHandler(this, &ClientWindow::rbExpress_CheckedChanged);
 			// 
-			// rbStandard
+			// rbCommon
 			// 
-			this->rbStandard->AutoSize = true;
-			this->rbStandard->Checked = true;
-			this->rbStandard->Location = System::Drawing::Point(23, 35);
-			this->rbStandard->Name = L"rbStandard";
-			this->rbStandard->Size = System::Drawing::Size(105, 24);
-			this->rbStandard->TabIndex = 0;
-			this->rbStandard->TabStop = true;
-			this->rbStandard->Text = L"Обычная";
-			this->rbStandard->UseVisualStyleBackColor = true;
+			this->rbCommon->AutoSize = true;
+			this->rbCommon->Checked = true;
+			this->rbCommon->Location = System::Drawing::Point(23, 35);
+			this->rbCommon->Name = L"rbCommon";
+			this->rbCommon->Size = System::Drawing::Size(105, 24);
+			this->rbCommon->TabIndex = 0;
+			this->rbCommon->TabStop = true;
+			this->rbCommon->Text = L"Обычная";
+			this->rbCommon->UseVisualStyleBackColor = true;
 			// 
 			// label30
 			// 
@@ -964,6 +951,16 @@ namespace LogisticsApp {
 #pragma endregion
 		// ================== ЛОГИКА РАСЧЁТА ==================
 	private:
+
+
+		// Кеш последнего расчёта (нужно, чтобы передать корректные значения в LoginWindow/БД)
+		int _lastDistanceKm = 0;
+		double _lastBaseCost = 0.0;
+		double _lastOptionsCost = 0.0;
+		double _lastInsuranceCost = 0.0;
+		double _lastTotalCost = 0.0;
+		bool _recalcWired = false;
+
 		double ParseDouble(TextBox^ tb)
 		{
 			if (tb == nullptr || String::IsNullOrWhiteSpace(tb->Text))
@@ -982,73 +979,83 @@ namespace LogisticsApp {
 			return ok ? value : 0.0;
 		}
 
+
 		double GetCargoMultiplier()
 		{
-			switch (cb_type_cargo->SelectedIndex)
-			{
-			case 1: return 1.20; // Хрупкое
-			case 2: return 0.90; // Документы
-			case 3: return 1.50; // Крупногабаритный
-			case 4: return 1.70; // Топливо
-			case 5: return 2.00; // Газ
-			case 6: return 3.00; // Радиоактивные
-			default: return 1.00; // Обычный
-			}
+			int idx = cb_type_cargo != nullptr ? cb_type_cargo->SelectedIndex : 0;
+			if (idx < 0) idx = 0;
+			String^ key = "CargoCoef_" + idx.ToString();
+			return AppStorage::GetSetting(key, 1.0);
 		}
+
 
 		double GetDeliveryMultiplier()
 		{
-			return rbExpress->Checked ? 1.25 : 1.00;
+			double express = AppStorage::GetSetting("ExpressMultiplier", 1.25);
+			return rbExpress->Checked ? express : 1.00;
 		}
+
 
 		double GetOptionsCost()
 		{
-			double sum = 0;
+			double sum = 0.0;
 
 			// Адресные услуги
-			if (chb_from_adress->Checked) sum += 710;
-			if (chb_where_adress->Checked) sum += 510;
+			if (chb_from_adress->Checked)  sum += AppStorage::GetSetting("PickupFee", 710.0);
+			if (chb_where_adress->Checked) sum += AppStorage::GetSetting("DeliveryFee", 510.0);
 
 			// Упаковка
-			if (checkBox1->Checked) sum += 510; // защитная упаковка
-			if (checkBox2->Checked) sum += 600; // палетирование
+			if (checkBox1->Checked) sum += AppStorage::GetSetting("ProtectPackFee", 510.0); // защитная упаковка
+			if (checkBox2->Checked) sum += AppStorage::GetSetting("PalletFee", 600.0);      // палетирование
 
 			// Доставка
-			if (checkBox3->Checked) sum += 0;   // доставка на этаж (+0)
+			if (checkBox3->Checked) sum += AppStorage::GetSetting("FloorDeliveryFee", 0.0); // доставка на этаж
 
 			// Документы
-			if (checkBox4->Checked) sum += 150;
-			if (checkBox5->Checked) sum += 100;
+			if (checkBox4->Checked) sum += AppStorage::GetSetting("DocsFeeA", 150.0);
+			if (checkBox5->Checked) sum += AppStorage::GetSetting("DocsFeeB", 100.0);
 
 			return sum;
 		}
 
+
 		double GetInsuranceCost()
 		{
-			// 0.5% от объявленной стоимости
+			// % от объявленной стоимости (настраивается в админке)
 			double declaredCost = ParseDouble(tb_nCost);
 			if (declaredCost < 0) declaredCost = 0;
-			return declaredCost * 0.005;
+
+			double percent = AppStorage::GetSetting("InsurancePercent", 0.5); // по умолчанию 0.5%
+			return declaredCost * (percent / 100.0);
 		}
 
 		void Recalculate()
 		{
+			// ---------- 1. Парсим числа ----------
 			double weight = ParseDouble(tb_weight);
 			double volume = ParseDouble(tb_volume);
 			double length = ParseDouble(tb_length);
 
+			// ---------- 2. Получаем города ----------
 			std::wstring fromCity =
 				msclr::interop::marshal_as<std::wstring>(tb_whereFrom->Text);
 
 			std::wstring toCity =
 				msclr::interop::marshal_as<std::wstring>(tb_where->Text);
 
+			// ---------- 3. Получаем расстояние ----------
 			int distanceKm = ::GetDistanceKm(fromCity, toCity);
 
-			double distanceCost = distanceKm * 12.0; 
-			double weightCost = weight * 15.0;
-			double volumeCost = volume * 120.0;
-			double lengthCost = length * 50.0;
+			// ---------- 4. Считаем базовую стоимость ----------
+			double rateKm = AppStorage::GetSetting("RatePerKm", 12.0);
+			double rateKg = AppStorage::GetSetting("RatePerKg", 15.0);
+			double rateM3 = AppStorage::GetSetting("RatePerM3", 120.0);
+			double rateM = AppStorage::GetSetting("RatePerM", 50.0);
+
+			double distanceCost = distanceKm * rateKm;
+			double weightCost = weight * rateKg;
+			double volumeCost = volume * rateM3;
+			double lengthCost = length * rateM;
 
 			double baseCost =
 				distanceCost +
@@ -1056,36 +1063,127 @@ namespace LogisticsApp {
 				volumeCost +
 				lengthCost;
 
-			baseCost *= GetCargoMultiplier();   
-			baseCost *= GetDeliveryMultiplier(); 
+			// ---------- 5. Множители ----------
+			baseCost *= GetCargoMultiplier();   // характер груза
+			baseCost *= GetDeliveryMultiplier(); // обычная / экспресс
 
+			// ---------- 6. Дополнения ----------
 			double optionsCost = GetOptionsCost();
 			double insuranceCost = GetInsuranceCost();
 
 			double total = baseCost + optionsCost + insuranceCost;
 
+			// Кешируем (для передачи в окно оформления/БД)
+			_lastDistanceKm = distanceKm;
+			_lastBaseCost = baseCost;
+			_lastOptionsCost = optionsCost;
+			_lastInsuranceCost = insuranceCost;
+			_lastTotalCost = total;
+
+			// ---------- 7. Вывод на ПРАВУЮ панель ----------
 			lblDistanceCost->Text =
 				L"Расстояние: " + distanceKm + L" км";
 
 			lblWeightCost->Text =
-				L"Вес: " + weightCost.ToString("F0") + L" ₽";
+				L"Вес: " + weightCost.ToString("F0") + L" руб";
 
 			lblOptionsCost->Text =
-				L"Доп. услуги: " + optionsCost.ToString("F0") + L" ₽";
+				L"Доп. услуги: " + optionsCost.ToString("F0") + L" руб";
 
 			lblInsuranceCost->Text =
-				L"Страхование: " + insuranceCost.ToString("F0") + L" ₽";
+				L"Страхование: " + insuranceCost.ToString("F0") + L" руб";
 
 			lb_COST->Text =
-				L"ИТОГО: " + total.ToString("F0") + L" ₽";
+				L"ИТОГО: " + total.ToString("F0") + L" руб";
+
+		}
+
+		OrderDraft^ BuildOrderDraft()
+		{
+			Recalculate(); // гарантируем актуальные значения
+
+			OrderDraft^ d = gcnew OrderDraft();
+			d->CityFrom = tb_whereFrom->Text;
+			d->CityTo = tb_where->Text;
+			d->DistanceKm = _lastDistanceKm;
+
+			d->CargoType = cb_type_cargo->Text;
+			d->CargoTypeIndex = cb_type_cargo->SelectedIndex;
+
+			d->WeightKg = ParseDouble(tb_weight);
+			d->VolumeM3 = ParseDouble(tb_volume);
+			d->LengthM = ParseDouble(tb_length);
+			d->DeclaredValue = ParseDouble(tb_nCost);
+
+			d->PickupFromAddress = chb_from_adress->Checked;
+			d->DeliveryToAddress = chb_where_adress->Checked;
+			d->FromAddress = tb_from_adress->Text;
+			d->ToAddress = tb_where_adress->Text;
+
+			d->OptProtectPack = checkBox1->Checked;
+			d->OptPallet = checkBox2->Checked;
+			d->OptFloorDelivery = checkBox3->Checked;
+			d->OptDocsA = checkBox4->Checked;
+			d->OptDocsB = checkBox5->Checked;
+
+			d->DeliveryType = rbExpress->Checked ? "Экспресс" : "Обычная";
+
+			d->BaseCost = _lastBaseCost;
+			d->OptionsCost = _lastOptionsCost;
+			d->InsuranceCost = _lastInsuranceCost;
+			d->TotalCost = _lastTotalCost;
+
+			return d;
 		}
 
 		// ================== КОНЕЦ ЛОГИКИ ==================
+
+			// Подписываемся на изменения полей, чтобы цена обновлялась в реальном времени
+		void WireRecalcEvents()
+		{
+			if (_recalcWired) return;
+			_recalcWired = true;
+
+			// Числовые поля
+			if (tb_weight) tb_weight->TextChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+			if (tb_volume) tb_volume->TextChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+			if (tb_length) tb_length->TextChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+			if (tb_nCost)  tb_nCost->TextChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+
+			// Города/адреса
+			if (tb_whereFrom) tb_whereFrom->TextChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+			if (tb_where)     tb_where->TextChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+			if (tb_from_adress)  tb_from_adress->TextChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+			if (tb_where_adress) tb_where_adress->TextChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+
+			// Тип груза
+			if (cb_type_cargo) cb_type_cargo->SelectedIndexChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+
+			// Радио: обычная/экспресс
+			if (rbCommon)  rbCommon->CheckedChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+			if (rbExpress) rbExpress->CheckedChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+
+			// Чекбоксы адресных услуг
+			if (chb_from_adress)  chb_from_adress->CheckedChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+			if (chb_where_adress) chb_where_adress->CheckedChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+
+			// Доп. опции
+			if (checkBox1) checkBox1->CheckedChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+			if (checkBox2) checkBox2->CheckedChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+			if (checkBox3) checkBox3->CheckedChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+			if (checkBox4) checkBox4->CheckedChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+			if (checkBox5) checkBox5->CheckedChanged += gcnew System::EventHandler(this, &ClientWindow::AnyValueChanged);
+		}
+
 	private: System::Void AnyValueChanged(System::Object^ sender, System::EventArgs^ e)
 	{
 		Recalculate();
 	}
 	private: System::Void ClientWindow_Load(System::Object^ sender, System::EventArgs^ e) {
+		WireRecalcEvents();
+		// корректная видимость адресов
+		if (tb_from_adress) tb_from_adress->Visible = chb_from_adress->Checked;
+		if (tb_where_adress) tb_where_adress->Visible = chb_where_adress->Checked;
 		Recalculate();
 	}
 	private: System::Void выходToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -1107,12 +1205,14 @@ namespace LogisticsApp {
 	private: System::Void label7_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
 	private: System::Void chb_from_adress_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-		tb_where_adress->Visible = chb_from_adress->Checked;
+		if (tb_from_adress) tb_from_adress->Visible = chb_from_adress->Checked;
+		Recalculate();
 	}
 	private: System::Void label17_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
 	private: System::Void chb_where_adress_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-		tb_from_adress->Visible = chb_where_adress->Checked;
+		if (tb_where_adress) tb_where_adress->Visible = chb_where_adress->Checked;
+		Recalculate();
 	}
 	private: System::Void tb_from_adress_TextChanged(System::Object^ sender, System::EventArgs^ e) {
 	}
@@ -1130,7 +1230,8 @@ namespace LogisticsApp {
 	}
 	private: System::Void btn_on_login_win_Click(System::Object^ sender, System::EventArgs^ e) {
 		this->Hide();
-		LoginWindow^ loginForm = gcnew LoginWindow();
+		OrderDraft^ draft = BuildOrderDraft();
+		LoginWindow^ loginForm = gcnew LoginWindow(draft);
 		loginForm->ShowDialog();
 		this->Show();
 	}

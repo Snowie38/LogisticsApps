@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "AppStorage.h"
 #include "UITheme.h"
 
 namespace LogisticsApp {
@@ -11,16 +12,38 @@ namespace LogisticsApp {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
+	/// <summary>
+	/// Сводка для LoginWindow
+	/// </summary>
 	public ref class LoginWindow : public System::Windows::Forms::Form
 	{
 	public:
 		LoginWindow(void)
 		{
 			InitializeComponent();
+			AppStorage::Init();
+			UITheme::Apply(this);
 
+			_draft = nullptr;
+			_senderType = SenderType::Person;
+			_recipientType = 0;
+		}
+
+		LoginWindow(OrderDraft^ draft)
+		{
+			InitializeComponent();
+			AppStorage::Init();
+			UITheme::Apply(this);
+
+			_draft = draft;
+			_senderType = SenderType::Person;
+			_recipientType = 0;
 		}
 
 	protected:
+		/// <summary>
+		/// Освободить все используемые ресурсы.
+		/// </summary>
 		~LoginWindow()
 		{
 			if (components)
@@ -31,8 +54,11 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Panel^ panel1;
 	private: System::Windows::Forms::Label^ label1;
 	private: System::Windows::Forms::Panel^ pnSenderTabs;
+
 	private: System::Windows::Forms::RadioButton^ btnSenderPerson;
 	private: System::Windows::Forms::RadioButton^ btnSenderLegal;
+
+
 	private: System::Windows::Forms::RadioButton^ btnSenderIP;
 	private: System::Windows::Forms::Panel^ pnSenderPerson;
 	private: System::Windows::Forms::Label^ label6;
@@ -51,6 +77,7 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label7;
 	private: System::Windows::Forms::TextBox^ textBox6;
 	private: System::Windows::Forms::Panel^ pnSenderIP;
+
 	private: System::Windows::Forms::Label^ label10;
 	private: System::Windows::Forms::DateTimePicker^ dateTimePicker2;
 	private: System::Windows::Forms::Label^ label11;
@@ -69,6 +96,7 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label18;
 	private: System::Windows::Forms::TextBox^ textBox13;
 	private: System::Windows::Forms::Panel^ pnSenderLegal;
+
 	private: System::Windows::Forms::Label^ label31;
 	private: System::Windows::Forms::TextBox^ textBox24;
 	private: System::Windows::Forms::Label^ label30;
@@ -95,6 +123,9 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label19;
 	private: System::Windows::Forms::TextBox^ textBox14;
 	private: System::Windows::Forms::Panel^ pnRecipientLegal;
+
+
+
 	private: System::Windows::Forms::Label^ label32;
 	private: System::Windows::Forms::TextBox^ textBox25;
 	private: System::Windows::Forms::Label^ label33;
@@ -119,6 +150,8 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label43;
 	private: System::Windows::Forms::TextBox^ textBox34;
 	private: System::Windows::Forms::Panel^ pnRecipientIP;
+
+
 	private: System::Windows::Forms::Label^ label44;
 	private: System::Windows::Forms::TextBox^ textBox35;
 	private: System::Windows::Forms::Label^ label45;
@@ -139,6 +172,8 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label53;
 	private: System::Windows::Forms::TextBox^ textBox42;
 	private: System::Windows::Forms::Panel^ pnRecipientPerson;
+
+
 	private: System::Windows::Forms::Label^ label54;
 	private: System::Windows::Forms::DateTimePicker^ dateTimePicker6;
 	private: System::Windows::Forms::Label^ label55;
@@ -156,15 +191,31 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::TextBox^ textBox48;
 	private: System::Windows::Forms::Panel^ panel5;
 	private: System::Windows::Forms::RadioButton^ btnRecipientLegacy;
+
 	private: System::Windows::Forms::RadioButton^ btnRecipientIP;
+
+
+
 	private: System::Windows::Forms::RadioButton^ btnRecipientPerson;
+
+
 	private: System::Windows::Forms::Label^ label62;
 	private: System::Windows::Forms::Button^ btnApproveForms;
+
+
 	protected:
+
 	private:
+		/// <summary>
+		/// Обязательная переменная конструктора.
+		/// </summary>
 		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
+		/// <summary>
+		/// Требуемый метод для поддержки конструктора — не изменяйте 
+		/// содержимое этого метода с помощью редактора кода.
+		/// </summary>
 		void InitializeComponent(void)
 		{
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
@@ -1762,6 +1813,7 @@ namespace LogisticsApp {
 	private:
 		void SetRecipientType(int type)
 		{
+			_recipientType = type;
 			StyleButton(btnRecipientPerson, type == 0);
 			StyleButton(btnRecipientIP, type == 1);
 			StyleButton(btnRecipientLegacy, type == 2);
@@ -1772,6 +1824,32 @@ namespace LogisticsApp {
 
 	private:
 		enum class SenderType { Person, IP, Legal };
+
+		SenderType _senderType;
+		int _recipientType;
+		OrderDraft^ _draft;
+
+		String^ TrimOrEmpty(String^ s)
+		{
+			if (String::IsNullOrWhiteSpace(s)) return "";
+			return s->Trim();
+		}
+
+		String^ CombineFio(String^ fam, String^ name, String^ otch)
+		{
+			String^ f = TrimOrEmpty(fam);
+			String^ n = TrimOrEmpty(name);
+			String^ o = TrimOrEmpty(otch);
+
+			System::Collections::Generic::List<String^>^ parts =
+				gcnew System::Collections::Generic::List<String^>();
+
+			if (!String::IsNullOrEmpty(f)) parts->Add(f);
+			if (!String::IsNullOrEmpty(n)) parts->Add(n);
+			if (!String::IsNullOrEmpty(o)) parts->Add(o);
+
+			return String::Join(" ", parts->ToArray());
+		}
 
 		void StyleButton(RadioButton^ b, bool isActive)
 		{
@@ -1786,6 +1864,7 @@ namespace LogisticsApp {
 
 		void SetSenderType(SenderType t)
 		{
+			_senderType = t;
 			pnSenderPerson->Visible = (t == SenderType::Person);
 			pnSenderIP->Visible = (t == SenderType::IP);
 			pnSenderLegal->Visible = (t == SenderType::Legal);
@@ -1821,7 +1900,152 @@ namespace LogisticsApp {
 		SetRecipientType(2);
 	}
 	private: System::Void btnApproveForms_Click(System::Object^ sender, System::EventArgs^ e) {
-		System::Windows::Forms::MessageBox::Show("Ваш заказ успешно оформлен, ожидайте звонка от нашего оператора!", "Успех!");
+		if (_draft == nullptr)
+		{
+			MessageBox::Show("Не удалось отправить заказ: отсутствуют данные расчета (вернитесь на окно заказа).", "Ошибка",
+				MessageBoxButtons::OK, MessageBoxIcon::Error);
+			return;
+		}
+
+		// ---------- Отправитель ----------
+		String^ senderTypeStr = "";
+		String^ senderName = "";
+		String^ senderPhone = "";
+
+		String^ senderInn = "";
+		String^ senderOrgName = "";
+		String^ senderOpf = "";
+		String^ senderKpp = "";
+		String^ senderPassSeries = "";
+		String^ senderPassNumber = "";
+		DateTime senderPassDate = DateTime::MinValue;
+
+		if (_senderType == SenderType::Person)
+		{
+			senderTypeStr = "Физ. лицо";
+			senderPhone = textBox1->Text;
+			senderName = CombineFio(textBox2->Text, textBox3->Text, textBox4->Text);
+
+			senderPassSeries = textBox5->Text;
+			senderPassNumber = textBox6->Text;
+			senderPassDate = dateTimePicker1->Value;
+		}
+		else if (_senderType == SenderType::IP)
+		{
+			senderTypeStr = "ИП";
+			senderPhone = textBox12->Text;
+			senderName = CombineFio(textBox11->Text, textBox10->Text, textBox9->Text);
+
+			senderInn = textBox13->Text;
+			senderOrgName = textBox14->Text;
+
+			senderPassSeries = textBox8->Text;
+			senderPassNumber = textBox7->Text;
+			senderPassDate = dateTimePicker2->Value;
+		}
+		else // Legal
+		{
+			senderTypeStr = "Юр. лицо";
+			senderPhone = textBox22->Text;
+			senderName = CombineFio(textBox21->Text, textBox20->Text, textBox19->Text);
+
+			senderOrgName = textBox15->Text;
+			senderInn = textBox16->Text;
+			senderOpf = textBox23->Text;
+			senderKpp = textBox24->Text;
+
+			senderPassSeries = textBox18->Text;
+			senderPassNumber = textBox17->Text;
+			senderPassDate = dateTimePicker3->Value;
+		}
+
+		// ---------- Получатель ----------
+		String^ recipientTypeStr = "";
+		String^ recipientName = "";
+		String^ recipientPhone = "";
+
+		String^ recipientInn = "";
+		String^ recipientOrgName = "";
+		String^ recipientOpf = "";
+		String^ recipientKpp = "";
+		String^ recipientPassSeries = "";
+		String^ recipientPassNumber = "";
+		DateTime recipientPassDate = DateTime::MinValue;
+
+		if (_recipientType == 0) // Person
+		{
+			recipientTypeStr = "Физ. лицо";
+			recipientPhone = textBox48->Text;
+			recipientName = CombineFio(textBox47->Text, textBox46->Text, textBox45->Text);
+
+			recipientPassSeries = textBox44->Text;
+			recipientPassNumber = textBox43->Text;
+			recipientPassDate = dateTimePicker6->Value;
+		}
+		else if (_recipientType == 1) // IP
+		{
+			recipientTypeStr = "ИП";
+			recipientPhone = textBox42->Text;
+			recipientName = CombineFio(textBox41->Text, textBox40->Text, textBox39->Text);
+
+			recipientInn = textBox36->Text;
+			recipientOrgName = textBox35->Text;
+
+			recipientPassSeries = textBox38->Text;
+			recipientPassNumber = textBox37->Text;
+			recipientPassDate = dateTimePicker5->Value;
+		}
+		else // Legal
+		{
+			recipientTypeStr = "Юр. лицо";
+			recipientPhone = textBox34->Text;
+			recipientName = CombineFio(textBox33->Text, textBox32->Text, textBox31->Text);
+
+			recipientInn = textBox28->Text;
+			recipientOrgName = textBox27->Text;
+			recipientOpf = textBox26->Text;
+			recipientKpp = textBox25->Text;
+
+			recipientPassSeries = textBox30->Text;
+			recipientPassNumber = textBox29->Text;
+			recipientPassDate = dateTimePicker4->Value;
+		}
+
+		// Минимальная валидация
+		if (String::IsNullOrWhiteSpace(senderName) || String::IsNullOrWhiteSpace(senderPhone) ||
+			String::IsNullOrWhiteSpace(recipientName) || String::IsNullOrWhiteSpace(recipientPhone))
+		{
+			MessageBox::Show("Заполните ФИО и телефон отправителя/получателя.", "Проверка данных",
+				MessageBoxButtons::OK, MessageBoxIcon::Warning);
+			return;
+		}
+
+		int orderId = AppStorage::AddOrderEx(
+			_draft,
+			senderName, senderPhone, senderTypeStr,
+			recipientName, recipientPhone, recipientTypeStr,
+			senderInn, senderOrgName, senderOpf, senderKpp,
+			senderPassSeries, senderPassNumber, senderPassDate,
+			recipientInn, recipientOrgName, recipientOpf, recipientKpp,
+			recipientPassSeries, recipientPassNumber, recipientPassDate
+		);
+
+		if (orderId < 0)
+		{
+			MessageBox::Show("Не удалось сохранить заказ.", "Ошибка", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			return;
+		}
+
+		MessageBox::Show(
+			String::Format(
+				"Заказ №{0} успешно оформлен.\r\nСумма: {1} руб.\r\nОжидайте звонка оператора.",
+				orderId,
+				(int)Math::Round(_draft->TotalCost)
+			),
+			"Успех",
+			MessageBoxButtons::OK,
+			MessageBoxIcon::Information
+		);
 		this->Close();
 	}
 	};

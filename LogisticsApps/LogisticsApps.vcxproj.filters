@@ -33,6 +33,9 @@
     <ClCompile Include="StartWindow.cpp">
       <Filter>Файлы заголовков</Filter>
     </ClCompile>
+    <ClCompile Include="AppStorage.cpp">
+      <Filter>DataBase</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdminWindow.h">
@@ -52,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="UITheme.h">
       <Filter>Файлы ресурсов</Filter>
+    </ClInclude>
+    <ClInclude Include="AppStorage.h">
+      <Filter>DataBase</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

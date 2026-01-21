@@ -35,7 +35,7 @@ namespace LogisticsApp {
 		Panel^ pnContent;
 		Label^ lblTitle;
 
-		// Страницы (пока заглушки)
+		// Страницы 
 		Dictionary<String^, Panel^>^ pages;
 		Dictionary<String^, Button^>^ navButtons;
 
@@ -56,7 +56,7 @@ namespace LogisticsApp {
 		}
 #pragma endregion
 
-		// ====== СТРОИМ МЕНЮ ======
+		// ====== МЕНЮ ======
 		void BuildAdminUI()
 		{
 			this->SuspendLayout();
@@ -86,12 +86,10 @@ namespace LogisticsApp {
 			pnSidebarMenu->Dock = DockStyle::Fill;
 			pnSidebarMenu->BackColor = pnSidebar->BackColor;
 
-			// Добавляем зоны в ПРАВИЛЬНОМ порядке (Bottom -> Fill -> Top)
 			pnSidebar->Controls->Add(pnSidebarBottom);
 			pnSidebar->Controls->Add(pnSidebarMenu);
 			pnSidebar->Controls->Add(pnSidebarTop);
 
-			// Лого сверху
 			Label^ lblLogo = gcnew Label();
 			lblLogo->Dock = DockStyle::Fill;
 			lblLogo->Text = L"LOGISTICS\nADMIN";
@@ -125,16 +123,12 @@ namespace LogisticsApp {
 			pnContent->Dock = DockStyle::Fill;
 			pnContent->BackColor = Color::FromArgb(240, 242, 245);
 
-			// Добавляем в pnMain в ПРАВИЛЬНОМ порядке (Fill -> Top)
 			pnMain->Controls->Add(pnContent);
 			pnMain->Controls->Add(pnTop);
 
-			// Добавляем на форму (СНАЧАЛА main, ПОТОМ sidebar) — так тоже стабильнее
 			this->Controls->Add(pnMain);
 			this->Controls->Add(pnSidebar);
 
-			// ===== Кнопки меню (в pnSidebarMenu) =====
-			// ВАЖНО: Dock=Top — чтобы порядок был как в списке, добавляем СНИЗУ ВВЕРХ
 			AddNavButton(pnSidebarMenu, L"Настройки");
 			AddNavButton(pnSidebarMenu, L"Опции / Услуги");
 			AddNavButton(pnSidebarMenu, L"Тарифы / Расстояния");
@@ -142,10 +136,8 @@ namespace LogisticsApp {
 			AddNavButton(pnSidebarMenu, L"Заказы");
 			AddNavButton(pnSidebarMenu, L"Главная");
 
-			// Выход внизу
-			AddNavButton(pnSidebarBottom, L"Выход");
 
-			// ===== Страницы-заглушки =====
+			// ===== Страницы =====
 			CreatePage(L"Главная", L"Здесь будет дашборд: статистика заказов, выручка, активные заявки.");
 			CreatePage(L"Заказы", L"Здесь будет таблица заказов (DataGridView) и смена статусов.");
 			CreatePage(L"Клиенты", L"Здесь будет список клиентов и история заказов.");
@@ -177,7 +169,6 @@ namespace LogisticsApp {
 			navButtons[text] = btn;
 			parent->Controls->Add(btn); // без SetChildIndex
 		}
-
 
 		void CreatePage(String^ key, String^ hint)
 		{
@@ -217,9 +208,6 @@ namespace LogisticsApp {
 
 			pages[key] = page;
 		}
-
-
-
 
 		void ShowPage(String^ key)
 		{

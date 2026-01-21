@@ -21,8 +21,40 @@ namespace LogisticsApp {
 		{
 			InitializeComponent();
 			UITheme::Apply(this);
-		}
+			if (cb_type_cargo->Items->Count > 0)
+				cb_type_cargo->SelectedIndex = 0;
 
+			// Ввод параметров груза
+			tb_weight->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+			tb_volume->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+			tb_length->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+			tb_nCost->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+
+			// Города 
+			tb_whereFrom->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+			tb_where->TextChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+
+			// Тип груза
+			cb_type_cargo->SelectedIndexChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+
+			// Доп опции
+			checkBox1->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+			checkBox2->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+			checkBox3->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+			checkBox4->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+			checkBox5->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+
+			// Адресные услуги
+			chb_from_adress->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+			chb_where_adress->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+
+			// Тип доставки
+			rbStandard->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+			rbExpress->CheckedChanged += gcnew EventHandler(this, &ClientWindow::AnyValueChanged);
+
+			// чтобы сразу пересчитать значения при открытии окна
+			AnyValueChanged(nullptr, nullptr);
+		}
 
 	protected:
 		~ClientWindow()

@@ -1,9 +1,5 @@
 #pragma once
 
-// Общий слой хранения данных для приложения: DataSet + XML.
-// Файл: logistics_storage.xml (рядом с exe).
-// Используется в AdminWindow / ClientWindow / LoginWindow.
-
 namespace LogisticsApp {
 
 	using namespace System;
@@ -40,7 +36,7 @@ namespace LogisticsApp {
 		bool OptDocsA;
 		bool OptDocsB;
 
-		String^ DeliveryType; // "Экспресс"/"Стандарт"
+		String^ DeliveryType;
 
 		// расчёты
 		double BaseCost;
@@ -58,7 +54,6 @@ namespace LogisticsApp {
 		static DataTable^ _settings = nullptr;
 		static String^ _path = nullptr;
 
-		// --- helpers ---
 		static void EnsureColumn(DataTable^ t, String^ name, Type^ type, Object^ defaultValue)
 		{
 			if (t == nullptr) return;
@@ -69,7 +64,6 @@ namespace LogisticsApp {
 				t->Columns->Add(c);
 			}
 		}
-		// перегрузки, чтобы избежать C4965 (неявная упаковка 0/false)
 		static void EnsureColumn(DataTable^ t, String^ name, Type^ type, int defaultValue)
 		{
 			EnsureColumn(t, name, type, safe_cast<Object^>(defaultValue));
@@ -103,7 +97,7 @@ namespace LogisticsApp {
 			return false;
 		}
 
-		// миграция имён колонок (если в старом XML были другие названия)
+		// миграция имён колонок 
 		static void MigrateColumnName(DataTable^ t, String^ oldName, String^ newName)
 		{
 			if (t == nullptr) return;
@@ -130,7 +124,6 @@ namespace LogisticsApp {
 			t->Columns->Remove(oldName);
 		}
 
-		// --- schema builders ---
 		static DataTable^ BuildOrders()
 		{
 			DataTable^ t = gcnew DataTable("Orders");
@@ -232,7 +225,7 @@ namespace LogisticsApp {
 			t->Columns->Add("Phone", String::typeid);
 			t->Columns->Add("Email", String::typeid);
 
-			t->Columns->Add("ClientType", String::typeid); // Физ. лицо / ИП / Юр. лицо
+			t->Columns->Add("ClientType", String::typeid); 
 			t->Columns->Add("Inn", String::typeid);
 			t->Columns->Add("OrgName", String::typeid);
 			t->Columns->Add("Opf", String::typeid);
@@ -255,14 +248,13 @@ namespace LogisticsApp {
 			// числовые настройки
 			t->Columns->Add("Value", Double::typeid);
 
-			// строковые настройки (например пароль администратора)
+			// строковые настройки
 			t->Columns->Add("ValueStr", String::typeid);
 
 			t->Columns->Add("Note", String::typeid);
 			return t;
 		}
 
-		// --- seeding ---
 		static void SeedSetting(String^ key, double value, String^ note)
 		{
 			DataRow^ r = _settings->Rows->Find(key);
@@ -325,10 +317,9 @@ namespace LogisticsApp {
 			SeedSettingStr("AdminPassword", "1111", "Пароль администратора");
 		}
 
-		// --- schema upgrade ---
 		static void EnsureSchemasAfterLoad()
 		{
-			// миграция старых названий паспортных полей (*Passport* -> *Pass*)
+			// миграция старых названий паспортных полей
 			MigrateColumnName(_orders, "SenderPassportSeries", "SenderPassSeries");
 			MigrateColumnName(_orders, "SenderPassportNumber", "SenderPassNumber");
 			MigrateColumnName(_orders, "SenderPassportDate", "SenderPassDate");
@@ -415,7 +406,6 @@ namespace LogisticsApp {
 			EnsureColumn(_settings, "ValueStr", String::typeid, "");
 			EnsureColumn(_settings, "Note", String::typeid, "");
 
-			// defaults if missing
 			SeedDefaults();
 		}
 
@@ -493,8 +483,8 @@ namespace LogisticsApp {
 
 				return;
 			}
-
-			// не нашли — создаём
+			
+			//Обработка если не наши по номеру
 			DataRow^ r = _clients->NewRow();
 			r["Name"] = name;
 			r["Phone"] = phone;
@@ -627,7 +617,6 @@ namespace LogisticsApp {
 			UpdateSettingStr("AdminPassword", newPass);
 		}
 
-		// Расширенная перегрузка AddOrder — соответствует данным из LoginWindow (оформление заказа)
 		static int AddOrder(
 			OrderDraft^ d,
 			String^ senderName, String^ senderPhone, String^ senderEmail, String^ senderType,
@@ -702,7 +691,7 @@ namespace LogisticsApp {
 
 			_orders->Rows->Add(r);
 
-			// Добавим/обновим клиентов (и отправителя, и получателя)
+			// Добавим/обновим клиентов
 			UpsertClient(senderName, senderPhone, senderEmail, senderType,
 				senderInn, senderOrgName, senderOpf, senderKpp,
 				senderPassSeries, senderPassNumber, senderPassDate);
@@ -715,7 +704,6 @@ namespace LogisticsApp {
 			return Convert::ToInt32(r["Id"]);
 		}
 
-		// Алиасы для совместимости со старыми вызовами (если где-то остались)
 		static int AddOrderEx(
 			OrderDraft^ d,
 			String^ senderName, String^ senderPhone, String^ senderEmail, String^ senderType,

@@ -145,8 +145,8 @@ namespace LogisticsApp {
 
 		Form^ dlg = gcnew Form();
 		dlg->Text = "Пароль администратора";
-		dlg->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;// fully qualified
-		dlg->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;// fully qualified
+		dlg->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
+		dlg->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 		dlg->MinimizeBox = false;
 		dlg->MaximizeBox = false;
 		dlg->ClientSize = System::Drawing::Size(360, 160);

@@ -13,9 +13,6 @@ namespace LogisticsApp {
 	using namespace System::Drawing;
 	using namespace System::Text;
 
-	/// <summary>
-	/// Сводка для LoginWindow
-	/// </summary>
 	public ref class LoginWindow : public System::Windows::Forms::Form
 	{
 	public:
@@ -44,9 +41,6 @@ namespace LogisticsApp {
 		}
 
 	protected:
-		/// <summary>
-		/// Освободить все используемые ресурсы.
-		/// </summary>
 		~LoginWindow()
 		{
 			if (components)
@@ -57,11 +51,8 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Panel^ panel1;
 	private: System::Windows::Forms::Label^ label1;
 	private: System::Windows::Forms::Panel^ pnSenderTabs;
-
 	private: System::Windows::Forms::RadioButton^ btnSenderPerson;
 	private: System::Windows::Forms::RadioButton^ btnSenderLegal;
-
-
 	private: System::Windows::Forms::RadioButton^ btnSenderIP;
 	private: System::Windows::Forms::Panel^ pnSenderPerson;
 	private: System::Windows::Forms::Label^ label6;
@@ -80,7 +71,6 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label7;
 	private: System::Windows::Forms::TextBox^ textBox6;
 	private: System::Windows::Forms::Panel^ pnSenderIP;
-
 	private: System::Windows::Forms::Label^ label10;
 	private: System::Windows::Forms::DateTimePicker^ dateTimePicker2;
 	private: System::Windows::Forms::Label^ label11;
@@ -99,7 +89,6 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label18;
 	private: System::Windows::Forms::TextBox^ textBox13;
 	private: System::Windows::Forms::Panel^ pnSenderLegal;
-
 	private: System::Windows::Forms::Label^ label31;
 	private: System::Windows::Forms::TextBox^ textBox24;
 	private: System::Windows::Forms::Label^ label30;
@@ -126,9 +115,6 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label19;
 	private: System::Windows::Forms::TextBox^ textBox14;
 	private: System::Windows::Forms::Panel^ pnRecipientLegal;
-
-
-
 	private: System::Windows::Forms::Label^ label32;
 	private: System::Windows::Forms::TextBox^ textBox25;
 	private: System::Windows::Forms::Label^ label33;
@@ -153,8 +139,6 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label43;
 	private: System::Windows::Forms::TextBox^ textBox34;
 	private: System::Windows::Forms::Panel^ pnRecipientIP;
-
-
 	private: System::Windows::Forms::Label^ label44;
 	private: System::Windows::Forms::TextBox^ textBox35;
 	private: System::Windows::Forms::Label^ label45;
@@ -175,8 +159,6 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::Label^ label53;
 	private: System::Windows::Forms::TextBox^ textBox42;
 	private: System::Windows::Forms::Panel^ pnRecipientPerson;
-
-
 	private: System::Windows::Forms::Label^ label54;
 	private: System::Windows::Forms::DateTimePicker^ dateTimePicker6;
 	private: System::Windows::Forms::Label^ label55;
@@ -194,42 +176,22 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::TextBox^ textBox48;
 	private: System::Windows::Forms::Panel^ panel5;
 	private: System::Windows::Forms::RadioButton^ btnRecipientLegacy;
-
 	private: System::Windows::Forms::RadioButton^ btnRecipientIP;
-
-
-
 	private: System::Windows::Forms::RadioButton^ btnRecipientPerson;
-
-
 	private: System::Windows::Forms::Label^ label62;
 	private: System::Windows::Forms::Button^ btnApproveForms;
 	private: System::Windows::Forms::TextBox^ tb_mail_IP;
-
 	private: System::Windows::Forms::Label^ label64;
 	private: System::Windows::Forms::TextBox^ tb_mail_LEG;
-
 	private: System::Windows::Forms::Label^ label63;
 	private: System::Windows::Forms::TextBox^ tb_mail_Pes;
-
 	private: System::Windows::Forms::Label^ label65;
-
-
 	protected:
-
 	private:
-		/// <summary>
-		/// Обязательная переменная конструктора.
-		/// </summary>
 		System::ComponentModel::Container^ components;
-
 		bool _sanitizing = false;
 
 #pragma region Windows Form Designer generated code
-		/// <summary>
-		/// Требуемый метод для поддержки конструктора — не изменяйте 
-		/// содержимое этого метода с помощью редактора кода.
-		/// </summary>
 		void InitializeComponent(void)
 		{
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
@@ -1911,7 +1873,6 @@ namespace LogisticsApp {
 		SenderType _senderType;
 		int _recipientType;
 		OrderDraft^ _draft;
-		// ---------- ВАЛИДАЦИЯ ВВОДА (не меняет логику, только ограничивает ввод) ----------
 		void SetupInputMasks()
 		{
 			// Телефоны
@@ -2263,7 +2224,6 @@ namespace LogisticsApp {
 			recipientPassDate = dateTimePicker4->Value;
 		}
 
-		// Минимальная валидация
 		if (String::IsNullOrWhiteSpace(senderName) || String::IsNullOrWhiteSpace(senderPhone) ||
 			String::IsNullOrWhiteSpace(recipientName) || String::IsNullOrWhiteSpace(recipientPhone))
 		{

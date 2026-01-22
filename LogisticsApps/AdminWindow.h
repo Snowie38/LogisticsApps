@@ -1,15 +1,4 @@
 ﻿#pragma once
-// AdminWindow.h (no designer) — единый стиль, без лямбд, без auto, без HashSet.
-// Вкладки:
-//  - Главная (дашборд)
-//  - Заказы (таблица + статус/удаление)
-//  - Клиенты (Одна таблица: Фамилия/Имя/Отчество/Паспорт/Телефон отправителя)
-//  - Настройки стоимости (редактирование Settings из AppStorage)
-//
-// ВАЖНО:
-//  - Никаких лямбда-выражений (C++/CLI часто ломается)
-//  - Никаких «₽» и прочих спорных символов (используем "руб")
-//  - Паддинги и Dock/Anchor, чтобы ничего не "съезжало"
 
 #include "AppStorage.h"
 
@@ -61,7 +50,7 @@ namespace LogisticsApp {
         Button^ btnApplyStatus;
         Button^ btnDeleteOrder;
 
-        // Clients (ONE grid)
+        // Clients
         DataGridView^ dgvClients;
         DataTable^ dtClientsView;
 
@@ -87,7 +76,7 @@ namespace LogisticsApp {
         }
 #pragma endregion
 
-        // ===== theme helpers =====
+        // темы
         Color C_Back() { return Color::FromArgb(240, 242, 245); }
         Color C_Side() { return Color::FromArgb(32, 36, 48); }
         Color C_SideHover() { return Color::FromArgb(55, 63, 85); }
@@ -202,7 +191,6 @@ namespace LogisticsApp {
             return card;
         }
 
-        // ===== Build UI =====
         void BuildUI()
         {
             this->SuspendLayout();
@@ -273,7 +261,7 @@ namespace LogisticsApp {
             this->Controls->Add(pnMain);
             this->Controls->Add(pnSidebar);
 
-            // Nav (сверху вниз — добавляем в обратном порядке для DockStyle::Top)
+            // Nav 
             AddNavButton(pnSidebarBottom, "Выход");
             AddNavButton(pnSidebarMenu, "Настройки стоимости");
             AddNavButton(pnSidebarMenu, "Клиенты");
@@ -290,7 +278,7 @@ namespace LogisticsApp {
             this->PerformLayout();
         }
 
-        // ===== Pages =====
+        // страницы
         void BuildHomePage()
         {
             Panel^ page = CreatePage("Главная");
@@ -356,7 +344,7 @@ namespace LogisticsApp {
             Panel^ page = CreatePage("Заказы");
 
             Panel^ card = MakeCard();
-            card->Padding = System::Windows::Forms::Padding(12); // <-- паддинг карточки
+            card->Padding = System::Windows::Forms::Padding(12); 
             page->Controls->Add(card);
 
             TableLayoutPanel^ lay = gcnew TableLayoutPanel();
@@ -377,7 +365,7 @@ namespace LogisticsApp {
 
             Panel^ tools = gcnew Panel();
             tools->Dock = DockStyle::Fill;
-            tools->Padding = System::Windows::Forms::Padding(14); // <-- паддинг инструментов
+            tools->Padding = System::Windows::Forms::Padding(14); 
             lay->Controls->Add(tools, 1, 0);
 
             Label^ t = gcnew Label();
@@ -422,12 +410,11 @@ namespace LogisticsApp {
             btnDeleteOrder->Click += gcnew EventHandler(this, &AdminWindow::OnDeleteOrder);
             tools->Controls->Add(btnDeleteOrder);
 
-            ConfigureOrdersGrid(); // <-- фиксируем колонки и ширины
+            ConfigureOrdersGrid(); 
         }
 
         void OnOrdersDataBindingComplete(System::Object^ sender, DataGridViewBindingCompleteEventArgs^ e)
         {
-            // После привязки данных столбцы уже созданы — можно настроить отображение
             ConfigureOrdersGrid();
         }
 
@@ -494,7 +481,6 @@ namespace LogisticsApp {
                 }
             }
 
-            // Остальные столбцы — в конец
             for each (DataGridViewColumn ^ c in dgvOrders->Columns)
             {
                 if (!IsNameInList(c->Name, preferred))
@@ -510,7 +496,6 @@ namespace LogisticsApp {
             if (dgvOrders == nullptr) return;
             if (dgvOrders->Columns == nullptr) return;
 
-            // Показываем ВСЕ столбцы, которые есть в таблице Orders
             dgvOrders->AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode::DisplayedCells;
             dgvOrders->ScrollBars = ScrollBars::Both;
 
@@ -521,7 +506,7 @@ namespace LogisticsApp {
                 c->MinimumWidth = 60;
             }
 
-            // Читаемые заголовки (не обязательно, но сильно помогает)
+            // Читаемые заголовки 
             TrySetHeader("Id", "ID");
             TrySetHeader("CreatedAt", "Создан");
             TrySetHeader("UpdatedAt", "Обновлен");
@@ -594,7 +579,6 @@ namespace LogisticsApp {
             TrySetFormat("InsuranceCost", "N0");
             TrySetFormat("TotalCost", "N0");
 
-            // Чуть более удобные ширины для ключевых полей
             TrySetWidth("SenderName", 180);
             TrySetWidth("RecipientName", 180);
             TrySetWidth("SenderOrgName", 220);
@@ -828,7 +812,7 @@ namespace LogisticsApp {
             wrap->Controls->Add(btnChangeAdminPass);
         }
 
-        // ===== Navigation =====
+        // Навигация
         void ShowPage(String^ key)
         {
             if (key == "Выход")
@@ -837,11 +821,9 @@ namespace LogisticsApp {
                 return;
             }
 
-            // hide all
             for each (KeyValuePair<String^, Panel^> kv in pages)
                 kv.Value->Visible = false;
 
-            // reset nav
             for each (KeyValuePair<String^, Button^> kv in navButtons)
             {
                 kv.Value->BackColor = C_Side();
@@ -888,7 +870,6 @@ namespace LogisticsApp {
             if (lblStatRevenue) lblStatRevenue->Text = String::Format("{0:N0} руб", revenue);
         }
 
-        // ===== Events =====
         System::Void OnNavClick(System::Object^ sender, System::EventArgs^)
         {
             Button^ btn = dynamic_cast<Button^>(sender);
@@ -914,7 +895,6 @@ namespace LogisticsApp {
         DataRow^ FindOrderRow(int id)
         {
             if (id <= 0) return nullptr;
-            // Для Rows->Find() нужен PrimaryKey. Он у нас должен быть в AppStorage.
             try { return AppStorage::Orders()->Rows->Find(id); }
             catch (...) { return nullptr; }
         }
@@ -1012,5 +992,4 @@ namespace LogisticsApp {
             MessageBox::Show("Настройки сохранены.", "Настройки стоимости", MessageBoxButtons::OK, MessageBoxIcon::Information);
         }
     };
-
 }

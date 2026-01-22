@@ -16,9 +16,6 @@ namespace LogisticsApp {
 	using namespace System::Globalization;
 	using namespace System::Text;
 
-	/// <summary>
-	/// Сводка для ClientWindow
-	/// </summary>
 	public ref class ClientWindow : public System::Windows::Forms::Form
 	{
 	public:
@@ -27,15 +24,11 @@ namespace LogisticsApp {
 			InitializeComponent();
 			SetupInputMasks();
 			AppStorage::Init();
-			// Приводим окно к единому стилю.
 			UITheme::Apply(this);
 		}
 
 
 	protected:
-		/// <summary>
-		/// Освободить все используемые ресурсы.
-		/// </summary>
 		~ClientWindow()
 		{
 			if (components)
@@ -100,31 +93,20 @@ namespace LogisticsApp {
 	private: System::Windows::Forms::GroupBox^ gbDeliveryType;
 	private: System::Windows::Forms::RadioButton^ rbExpress;
 	private: System::Windows::Forms::RadioButton^ rbCommon;
-
 	private: System::Windows::Forms::Label^ lblInsuranceCost;
 	private: System::Windows::Forms::Label^ lblOptionsCost;
-
-
 	private: System::Windows::Forms::Label^ lblWeightCost;
 	private: System::Windows::Forms::Label^ lblDistanceCost;
 	private: System::Windows::Forms::Label^ lb_COST;
 	private: System::Windows::Forms::Button^ btn_on_login_win;
-
 	protected:
 	protected:
 	protected:
 	protected:
 	private:
-		/// <summary>
-		/// Обязательная переменная конструктора.
-		/// </summary>
 		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
-		/// <summary>
-		/// Требуемый метод для поддержки конструктора — не изменяйте 
-		/// содержимое этого метода с помощью редактора кода.
-		/// </summary>
 		void InitializeComponent(void)
 		{
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
@@ -953,7 +935,7 @@ namespace LogisticsApp {
 	private:
 
 
-		// Кеш последнего расчёта (нужно, чтобы передать корректные значения в LoginWindow/БД)
+		// Кэш
 		int _lastDistanceKm = 0;
 		double _lastBaseCost = 0.0;
 		double _lastOptionsCost = 0.0;
@@ -962,7 +944,6 @@ namespace LogisticsApp {
 		bool _recalcWired = false;
 		bool _sanitizing = false;
 
-		// ---------- ВАЛИДАЦИЯ ВВОДА (не меняет логику, только ограничивает ввод) ----------
 		void SetupInputMasks()
 		{
 			// Города (без цифр)
@@ -1057,7 +1038,6 @@ namespace LogisticsApp {
 				if (Char::IsDigit(c)) { sb->Append(c); continue; }
 				if ((c == '.' || c == ',') && !hasSep)
 				{
-					// не даём начинать с разделителя
 					if (sb->Length > 0)
 					{
 						sb->Append(c);
@@ -1167,7 +1147,6 @@ namespace LogisticsApp {
 
 		double GetInsuranceCost()
 		{
-			// % от объявленной стоимости (настраивается в админке)
 			double declaredCost = ParseDouble(tb_nCost);
 			if (declaredCost < 0) declaredCost = 0;
 
@@ -1210,8 +1189,8 @@ namespace LogisticsApp {
 				lengthCost;
 
 			// ---------- 5. Множители ----------
-			baseCost *= GetCargoMultiplier();   // характер груза
-			baseCost *= GetDeliveryMultiplier(); // обычная / экспресс
+			baseCost *= GetCargoMultiplier();   
+			baseCost *= GetDeliveryMultiplier(); 
 
 			// ---------- 6. Дополнения ----------
 			double optionsCost = GetOptionsCost();
@@ -1219,7 +1198,6 @@ namespace LogisticsApp {
 
 			double total = baseCost + optionsCost + insuranceCost;
 
-			// Кешируем (для передачи в окно оформления/БД)
 			_lastDistanceKm = distanceKm;
 			_lastBaseCost = baseCost;
 			_lastOptionsCost = optionsCost;
@@ -1246,7 +1224,7 @@ namespace LogisticsApp {
 
 		OrderDraft^ BuildOrderDraft()
 		{
-			Recalculate(); // гарантируем актуальные значения
+			Recalculate(); 
 
 			OrderDraft^ d = gcnew OrderDraft();
 			d->CityFrom = tb_whereFrom->Text;
@@ -1284,7 +1262,6 @@ namespace LogisticsApp {
 
 		// ================== КОНЕЦ ЛОГИКИ ==================
 
-			// Подписываемся на изменения полей, чтобы цена обновлялась в реальном времени
 		void WireRecalcEvents()
 		{
 			if (_recalcWired) return;
@@ -1327,7 +1304,6 @@ namespace LogisticsApp {
 	}
 	private: System::Void ClientWindow_Load(System::Object^ sender, System::EventArgs^ e) {
 		WireRecalcEvents();
-		// корректная видимость адресов
 		if (tb_from_adress) tb_from_adress->Visible = chb_from_adress->Checked;
 		if (tb_where_adress) tb_where_adress->Visible = chb_where_adress->Checked;
 		Recalculate();

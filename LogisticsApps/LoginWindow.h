@@ -11,6 +11,7 @@ namespace LogisticsApp {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::Text;
 
 	/// <summary>
 	/// Сводка для LoginWindow
@@ -21,6 +22,7 @@ namespace LogisticsApp {
 		LoginWindow(void)
 		{
 			InitializeComponent();
+			SetupInputMasks();
 			AppStorage::Init();
 			UITheme::Apply(this);
 
@@ -32,6 +34,7 @@ namespace LogisticsApp {
 		LoginWindow(OrderDraft^ draft)
 		{
 			InitializeComponent();
+			SetupInputMasks();
 			AppStorage::Init();
 			UITheme::Apply(this);
 
@@ -219,6 +222,8 @@ namespace LogisticsApp {
 		/// Обязательная переменная конструктора.
 		/// </summary>
 		System::ComponentModel::Container^ components;
+
+		bool _sanitizing = false;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -1906,6 +1911,175 @@ namespace LogisticsApp {
 		SenderType _senderType;
 		int _recipientType;
 		OrderDraft^ _draft;
+		// ---------- ВАЛИДАЦИЯ ВВОДА (не меняет логику, только ограничивает ввод) ----------
+		void SetupInputMasks()
+		{
+			// Телефоны
+			ApplyDigits(textBox1, 12);
+			ApplyDigits(textBox12, 12);
+			ApplyDigits(textBox22, 12);
+			ApplyDigits(textBox48, 12);
+			ApplyDigits(textBox42, 12);
+			ApplyDigits(textBox34, 12);
+
+			// ФИО
+			ApplyFio(textBox2, 100);
+			ApplyFio(textBox3, 100);
+			ApplyFio(textBox4, 100);
+			ApplyFio(textBox11, 100);
+			ApplyFio(textBox10, 100);
+			ApplyFio(textBox9, 100);
+			ApplyFio(textBox21, 100);
+			ApplyFio(textBox20, 100);
+			ApplyFio(textBox19, 100);
+			ApplyFio(textBox47, 100);
+			ApplyFio(textBox46, 100);
+			ApplyFio(textBox45, 100);
+			ApplyFio(textBox41, 100);
+			ApplyFio(textBox40, 100);
+			ApplyFio(textBox39, 100);
+			ApplyFio(textBox33, 100);
+			ApplyFio(textBox32, 100);
+			ApplyFio(textBox31, 100);
+
+			// Паспорт: серия (4) / номер (6)
+			ApplyDigits(textBox5, 4);
+			ApplyDigits(textBox8, 4);
+			ApplyDigits(textBox18, 4);
+			ApplyDigits(textBox44, 4);
+			ApplyDigits(textBox38, 4);
+			ApplyDigits(textBox30, 4);
+
+			ApplyDigits(textBox6, 6);
+			ApplyDigits(textBox7, 6);
+			ApplyDigits(textBox17, 6);
+			ApplyDigits(textBox43, 6);
+			ApplyDigits(textBox37, 6);
+			ApplyDigits(textBox29, 6);
+
+			// ИНН
+			ApplyDigits(textBox13, 12); // ИП
+			ApplyDigits(textBox36, 12); // ИП (получатель)
+			ApplyDigits(textBox16, 10); // Юр. лицо
+			ApplyDigits(textBox28, 10); // Юр. лицо (получатель)
+
+			// КПП (9)
+			ApplyDigits(textBox24, 9);
+			ApplyDigits(textBox25, 9);
+
+			// ОПФ (код)
+			ApplyDigits(textBox23, 3);
+			ApplyDigits(textBox26, 3);
+
+			// Email (убираем пробелы)
+			ApplyEmail(tb_mail_IP, 100);
+			ApplyEmail(tb_mail_LEG, 100);
+			ApplyEmail(tb_mail_Pes, 100);
+		}
+
+		void ApplyDigits(TextBox^ tb, int maxLen)
+		{
+			if (tb == nullptr) return;
+			tb->MaxLength = maxLen;
+			tb->KeyPress += gcnew KeyPressEventHandler(this, &LoginWindow::Digits_KeyPress);
+			tb->TextChanged += gcnew EventHandler(this, &LoginWindow::Digits_TextChanged);
+		}
+
+		void ApplyFio(TextBox^ tb, int maxLen)
+		{
+			if (tb == nullptr) return;
+			tb->MaxLength = maxLen;
+			tb->KeyPress += gcnew KeyPressEventHandler(this, &LoginWindow::Fio_KeyPress);
+			tb->TextChanged += gcnew EventHandler(this, &LoginWindow::Fio_TextChanged);
+		}
+
+		void ApplyEmail(TextBox^ tb, int maxLen)
+		{
+			if (tb == nullptr) return;
+			tb->MaxLength = maxLen;
+			tb->KeyPress += gcnew KeyPressEventHandler(this, &LoginWindow::Email_KeyPress);
+			tb->TextChanged += gcnew EventHandler(this, &LoginWindow::Email_TextChanged);
+		}
+
+		System::Void Digits_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
+		{
+			if (Char::IsControl(e->KeyChar)) return;
+			if (!Char::IsDigit(e->KeyChar)) e->Handled = true;
+		}
+
+		System::Void Digits_TextChanged(System::Object^ sender, System::EventArgs^ e)
+		{
+			if (_sanitizing) return;
+			TextBox^ tb = dynamic_cast<TextBox^>(sender);
+			if (tb == nullptr) return;
+			String^ t = tb->Text;
+			StringBuilder^ sb = gcnew StringBuilder(t->Length);
+			for each (wchar_t c in t)
+				if (Char::IsDigit(c)) sb->Append(c);
+			String^ cleaned = sb->ToString();
+			if (cleaned != t)
+			{
+				_sanitizing = true;
+				int pos = tb->SelectionStart;
+				tb->Text = cleaned;
+				tb->SelectionStart = Math::Min(pos, tb->Text->Length);
+				_sanitizing = false;
+			}
+		}
+
+		System::Void Fio_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
+		{
+			if (Char::IsControl(e->KeyChar)) return;
+			wchar_t ch = e->KeyChar;
+			if (!Char::IsLetter(ch) && ch != ' ' && ch != '-' && ch != '\'')
+				e->Handled = true;
+		}
+
+		System::Void Fio_TextChanged(System::Object^ sender, System::EventArgs^ e)
+		{
+			if (_sanitizing) return;
+			TextBox^ tb = dynamic_cast<TextBox^>(sender);
+			if (tb == nullptr) return;
+			String^ t = tb->Text;
+			StringBuilder^ sb = gcnew StringBuilder(t->Length);
+			for each (wchar_t c in t)
+			{
+				if (Char::IsLetter(c) || c == ' ' || c == '-' || c == '\'')
+					sb->Append(c);
+			}
+			String^ cleaned = sb->ToString();
+			if (cleaned != t)
+			{
+				_sanitizing = true;
+				int pos = tb->SelectionStart;
+				tb->Text = cleaned;
+				tb->SelectionStart = Math::Min(pos, tb->Text->Length);
+				_sanitizing = false;
+			}
+		}
+
+		System::Void Email_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
+		{
+			if (Char::IsControl(e->KeyChar)) return;
+			if (Char::IsWhiteSpace(e->KeyChar)) e->Handled = true;
+		}
+
+		System::Void Email_TextChanged(System::Object^ sender, System::EventArgs^ e)
+		{
+			if (_sanitizing) return;
+			TextBox^ tb = dynamic_cast<TextBox^>(sender);
+			if (tb == nullptr) return;
+			String^ t = tb->Text;
+			String^ cleaned = t->Replace(" ", "")->Replace("\t", "");
+			if (cleaned != t)
+			{
+				_sanitizing = true;
+				int pos = tb->SelectionStart;
+				tb->Text = cleaned;
+				tb->SelectionStart = Math::Min(pos, tb->Text->Length);
+				_sanitizing = false;
+			}
+		}
 
 		String^ TrimOrEmpty(String^ s)
 		{
@@ -1990,7 +2164,6 @@ namespace LogisticsApp {
 		String^ senderName = "";
 		String^ senderPhone = "";
 
-		String^ senderEmail = "";
 		String^ senderInn = "";
 		String^ senderOrgName = "";
 		String^ senderOpf = "";
@@ -2005,7 +2178,6 @@ namespace LogisticsApp {
 			senderPhone = textBox1->Text;
 			senderName = CombineFio(textBox2->Text, textBox3->Text, textBox4->Text);
 
-			senderEmail = tb_mail_Pes->Text;
 			senderPassSeries = textBox5->Text;
 			senderPassNumber = textBox6->Text;
 			senderPassDate = dateTimePicker1->Value;
@@ -2018,8 +2190,6 @@ namespace LogisticsApp {
 
 			senderInn = textBox13->Text;
 			senderOrgName = textBox14->Text;
-
-			senderEmail = tb_mail_IP->Text;
 
 			senderPassSeries = textBox8->Text;
 			senderPassNumber = textBox7->Text;
@@ -2036,8 +2206,6 @@ namespace LogisticsApp {
 			senderOpf = textBox23->Text;
 			senderKpp = textBox24->Text;
 
-			senderEmail = tb_mail_LEG->Text;
-
 			senderPassSeries = textBox18->Text;
 			senderPassNumber = textBox17->Text;
 			senderPassDate = dateTimePicker3->Value;
@@ -2048,7 +2216,6 @@ namespace LogisticsApp {
 		String^ recipientName = "";
 		String^ recipientPhone = "";
 
-		String^ recipientEmail = "";
 		String^ recipientInn = "";
 		String^ recipientOrgName = "";
 		String^ recipientOpf = "";
@@ -2107,8 +2274,8 @@ namespace LogisticsApp {
 
 		int orderId = AppStorage::AddOrder(
 			_draft,
-			senderName, senderPhone, senderEmail, senderTypeStr,
-			recipientName, recipientPhone, recipientEmail, recipientTypeStr,
+			senderName, senderPhone, senderTypeStr,
+			recipientName, recipientPhone, recipientTypeStr,
 			senderInn, senderOrgName, senderOpf, senderKpp,
 			senderPassSeries, senderPassNumber, senderPassDate,
 			recipientInn, recipientOrgName, recipientOpf, recipientKpp,

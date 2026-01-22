@@ -14,6 +14,7 @@ namespace LogisticsApp {
 	using namespace System::Data;
 	using namespace System::Drawing;
 	using namespace System::Globalization;
+	using namespace System::Text;
 
 	/// <summary>
 	/// Сводка для ClientWindow
@@ -24,6 +25,7 @@ namespace LogisticsApp {
 		ClientWindow(void)
 		{
 			InitializeComponent();
+			SetupInputMasks();
 			AppStorage::Init();
 			// Приводим окно к единому стилю.
 			UITheme::Apply(this);
@@ -958,6 +960,152 @@ namespace LogisticsApp {
 		double _lastInsuranceCost = 0.0;
 		double _lastTotalCost = 0.0;
 		bool _recalcWired = false;
+		bool _sanitizing = false;
+
+		// ---------- ВАЛИДАЦИЯ ВВОДА (не меняет логику, только ограничивает ввод) ----------
+		void SetupInputMasks()
+		{
+			// Города (без цифр)
+			ApplyCity(tb_whereFrom, 60);
+			ApplyCity(tb_where, 60);
+
+			// Числовые поля (разрешаем цифры и один разделитель дроби)
+			ApplyDecimal(tb_weight, 10);
+			ApplyDecimal(tb_volume, 10);
+			ApplyDecimal(tb_length, 10);
+
+			// Стоимость (только цифры)
+			ApplyDigits(tb_nCost, 9);
+		}
+
+		void ApplyDigits(TextBox^ tb, int maxLen)
+		{
+			if (tb == nullptr) return;
+			tb->MaxLength = maxLen;
+			tb->KeyPress += gcnew KeyPressEventHandler(this, &ClientWindow::Digits_KeyPress);
+			tb->TextChanged += gcnew EventHandler(this, &ClientWindow::Digits_TextChanged);
+		}
+
+		void ApplyDecimal(TextBox^ tb, int maxLen)
+		{
+			if (tb == nullptr) return;
+			tb->MaxLength = maxLen;
+			tb->KeyPress += gcnew KeyPressEventHandler(this, &ClientWindow::Decimal_KeyPress);
+			tb->TextChanged += gcnew EventHandler(this, &ClientWindow::Decimal_TextChanged);
+		}
+
+		void ApplyCity(TextBox^ tb, int maxLen)
+		{
+			if (tb == nullptr) return;
+			tb->MaxLength = maxLen;
+			tb->KeyPress += gcnew KeyPressEventHandler(this, &ClientWindow::City_KeyPress);
+			tb->TextChanged += gcnew EventHandler(this, &ClientWindow::City_TextChanged);
+		}
+
+		System::Void Digits_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
+		{
+			if (Char::IsControl(e->KeyChar)) return;
+			if (!Char::IsDigit(e->KeyChar)) e->Handled = true;
+		}
+
+		System::Void Digits_TextChanged(System::Object^ sender, System::EventArgs^ e)
+		{
+			if (_sanitizing) return;
+			TextBox^ tb = dynamic_cast<TextBox^>(sender);
+			if (tb == nullptr) return;
+			String^ t = tb->Text;
+			StringBuilder^ sb = gcnew StringBuilder(t->Length);
+			for each (wchar_t c in t)
+				if (Char::IsDigit(c)) sb->Append(c);
+			String^ cleaned = sb->ToString();
+			if (cleaned != t)
+			{
+				_sanitizing = true;
+				int pos = tb->SelectionStart;
+				tb->Text = cleaned;
+				tb->SelectionStart = Math::Min(pos, tb->Text->Length);
+				_sanitizing = false;
+			}
+		}
+
+		System::Void Decimal_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
+		{
+			if (Char::IsControl(e->KeyChar)) return;
+			TextBox^ tb = dynamic_cast<TextBox^>(sender);
+			wchar_t ch = e->KeyChar;
+			if (Char::IsDigit(ch)) return;
+			if (ch == '.' || ch == ',')
+			{
+				if (tb == nullptr) { e->Handled = true; return; }
+				if (tb->Text->Contains(".") || tb->Text->Contains(",")) { e->Handled = true; return; }
+				if (tb->SelectionStart == 0) { e->Handled = true; return; }
+				return;
+			}
+			e->Handled = true;
+		}
+
+		System::Void Decimal_TextChanged(System::Object^ sender, System::EventArgs^ e)
+		{
+			if (_sanitizing) return;
+			TextBox^ tb = dynamic_cast<TextBox^>(sender);
+			if (tb == nullptr) return;
+			String^ t = tb->Text;
+			StringBuilder^ sb = gcnew StringBuilder(t->Length);
+			bool hasSep = false;
+			for each (wchar_t c in t)
+			{
+				if (Char::IsDigit(c)) { sb->Append(c); continue; }
+				if ((c == '.' || c == ',') && !hasSep)
+				{
+					// не даём начинать с разделителя
+					if (sb->Length > 0)
+					{
+						sb->Append(c);
+						hasSep = true;
+					}
+				}
+			}
+			String^ cleaned = sb->ToString();
+			if (cleaned != t)
+			{
+				_sanitizing = true;
+				int pos = tb->SelectionStart;
+				tb->Text = cleaned;
+				tb->SelectionStart = Math::Min(pos, tb->Text->Length);
+				_sanitizing = false;
+			}
+		}
+
+		System::Void City_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
+		{
+			if (Char::IsControl(e->KeyChar)) return;
+			wchar_t ch = e->KeyChar;
+			if (!Char::IsLetter(ch) && ch != ' ' && ch != '-' && ch != '\'')
+				e->Handled = true;
+		}
+
+		System::Void City_TextChanged(System::Object^ sender, System::EventArgs^ e)
+		{
+			if (_sanitizing) return;
+			TextBox^ tb = dynamic_cast<TextBox^>(sender);
+			if (tb == nullptr) return;
+			String^ t = tb->Text;
+			StringBuilder^ sb = gcnew StringBuilder(t->Length);
+			for each (wchar_t c in t)
+			{
+				if (Char::IsLetter(c) || c == ' ' || c == '-' || c == '\'')
+					sb->Append(c);
+			}
+			String^ cleaned = sb->ToString();
+			if (cleaned != t)
+			{
+				_sanitizing = true;
+				int pos = tb->SelectionStart;
+				tb->Text = cleaned;
+				tb->SelectionStart = Math::Min(pos, tb->Text->Length);
+				_sanitizing = false;
+			}
+		}
 
 		double ParseDouble(TextBox^ tb)
 		{
